@@ -1,12 +1,4 @@
 services:
-  sqlite:
-    image: nouchka/sqlite3
-    container_name: flood-sqlite
-    platform: linux/amd64
-    volumes:
-      - ./flood.db:/data/mydata.db
-    stdin_open: true
-    tty: true
   swagger-ui:
     image: swaggerapi/swagger-ui
     container_name: swagger-ui
