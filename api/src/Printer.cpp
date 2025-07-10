@@ -6,17 +6,20 @@
 
 #include "LiquidCrystal.h"
 
-void Printer::displayStickyMessage(const char* rowOne, const char* rowTwo)
+void Printer::displayStickyMessage()
+{
+    m_lcd.setCursor(0, 0);
+    m_lcd.print(m_stickyTextRowOne);
+    m_lcd.setCursor(0, 1);
+    m_lcd.print(m_stickyTextRowTwo);
+}
+
+void Printer::displayFlashMessage(const char* rowOne, const char* rowTwo)
 {
     m_lcd.setCursor(0, 0);
     m_lcd.print(rowOne);
     m_lcd.setCursor(0, 1);
     m_lcd.print(rowTwo);
-}
-
-void Printer::displayFlashMessage(const char* rowOne, const char* rowTwo)
-{
-    this->displayStickyMessage(rowOne, rowTwo);
     delay(FLASH_DISPLAY_TIME_MS);
     m_lcd.clear();
 }
@@ -51,12 +54,14 @@ void Printer::println(const char* rowOne, const char* rowTwo, PrintType printTyp
     }
     else if (printType == STICKY)
     {
-        this->displayStickyMessage(rowOne, rowTwo);
+        this->m_stickyTextRowOne = rowOne;
+        this->m_stickyTextRowTwo = rowTwo;
     }
     else
     {
         this->displayScrollMessage(rowOne, rowTwo);
     }
+    this->displayStickyMessage();
 }
 
 

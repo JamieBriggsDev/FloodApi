@@ -20,7 +20,6 @@ enum PrintType
  */
 class Printer
 {
-private:
     static constexpr uint8_t LCD_COLUMNS = 16;
     static constexpr uint8_t LCD_ROWS = 2;
     static constexpr uint8_t SCROLL_START_POSITION = LCD_COLUMNS + 1;
@@ -36,9 +35,12 @@ private:
     static constexpr int ESP_D2_PIN = 25;
     static constexpr int ESP_D3_PIN = 26;
 
+    const char* m_stickyTextRowOne;
+    const char* m_stickyTextRowTwo;
+
     LiquidCrystal m_lcd;
 
-    void displayStickyMessage(const char* rowOne, const char* rowTwo);
+    void displayStickyMessage();
     void displayFlashMessage(const char* rowOne, const char* rowTwo);
     void displayScrollMessage(const char* rowOne, const char* rowTwo);
     void clearDisplay();
@@ -47,6 +49,7 @@ public:
     Printer() : m_lcd(ESP_RS_PIN, ESP_ENABLE_PIN, ESP_D0_PIN, ESP_D1_PIN, ESP_D2_PIN, ESP_D3_PIN)
     {
         m_lcd.begin(LCD_COLUMNS, LCD_ROWS);
+        println("", "", STICKY);
     }
 
     /**
