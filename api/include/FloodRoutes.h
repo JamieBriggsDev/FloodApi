@@ -17,6 +17,8 @@ private:
 
     static void index(Request &request, Response &response);
     static void update(Request &request, Response &response);
+    static void river(Request &request, Response &response);
+    static void riverStation(Request &request, Response &response);
     WiFiServer m_server;
     Application m_app;
     Printer* m_printer;

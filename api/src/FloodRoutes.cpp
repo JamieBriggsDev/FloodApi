@@ -6,9 +6,11 @@
 
 #include <sstream>
 #include <Update.h>
+#include <cJSON.h>
 
 #include "wifi_settings.h"
 #include "Printer.h"
+#include "Readings.h"
 
 
 void FloodRoutes::index(Request& request, Response& response)
@@ -81,6 +83,18 @@ void FloodRoutes::update(Request& request, Response& response)
     response.sendStatus(204);
 }
 
+void FloodRoutes::river(Request& request, Response& response)
+{
+    response.set("Content-Type", "application/json");
+
+    response.println("{ \"readings\": [] }");
+}
+
+void FloodRoutes::riverStation(Request& request, Response& response)
+{
+    response.set("Content-Type", "application/json");
+}
+
 FloodRoutes::FloodRoutes(Printer* printer) : m_server(PORT), m_printer(printer)
 {
     WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
@@ -97,6 +111,9 @@ FloodRoutes::FloodRoutes(Printer* printer) : m_server(PORT), m_printer(printer)
     m_app.header("Expect", m_expectHeader, 20);
     m_app.get("/", &index);
     m_app.post("/update", &update);
+    // River API endpoints
+    m_app.get("/river", &river);
+    m_app.get("/river/{station}", &riverStation);
     m_server.begin();
 }
 
