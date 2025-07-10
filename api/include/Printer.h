@@ -9,7 +9,8 @@
 enum PrintType
 {
     SCROLL,
-    FLASH
+    FLASH,
+    STICKY
 };
 
 /**
@@ -25,7 +26,7 @@ private:
     static constexpr uint8_t SCROLL_START_POSITION = LCD_COLUMNS + 1;
     static constexpr uint8_t SCROLL_LENGTH = 32;
     static constexpr int FLASH_DISPLAY_TIME_MS = 3000;
-    static constexpr int SCROLL_DELAY_MS = 200;
+    static constexpr int SCROLL_DELAY_MS = 250;
     static constexpr int SCROLL_PAUSE_DELAY_MS = 1000;
 
     static constexpr int ESP_RS_PIN = 4;
@@ -37,8 +38,10 @@ private:
 
     LiquidCrystal m_lcd;
 
+    void displayStickyMessage(const char* rowOne, const char* rowTwo);
     void displayFlashMessage(const char* rowOne, const char* rowTwo);
     void displayScrollMessage(const char* rowOne, const char* rowTwo);
+    void clearDisplay();
 
 public:
     Printer() : m_lcd(ESP_RS_PIN, ESP_ENABLE_PIN, ESP_D0_PIN, ESP_D1_PIN, ESP_D2_PIN, ESP_D3_PIN)
