@@ -5,7 +5,14 @@ To run Swagger UI locally using the Flood API OpenAPI spec, use docker-compose:
 docker-compose up -d --build
 ```
 
-## Tools
+## API Setup
+Before building the package, a file needs creating for the WIFI settings. Copy the existing example header file:
+```shell
+cp api/include/wifi_settings.h.example api/include/wifi_settings.h
+```
+This file then needs populating with your WiFi SSID and password. Refrain from pushing this file up.
+
+## Tools (WIP)
 For this solution, I wanted to see how easy it was to create a REST API in C++. Several 
 tools exist, but for the purposes of this I chose pistacheio.
 

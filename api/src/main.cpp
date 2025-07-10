@@ -7,7 +7,7 @@
 #include <Update.h>
 #include <aWOT.h>
 
-#include "credentials.h"
+#include "wifi_settings.h"
 #include "Printer.h"
 
 
