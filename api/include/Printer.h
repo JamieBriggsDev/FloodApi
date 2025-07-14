@@ -28,12 +28,12 @@ class Printer
     static constexpr int SCROLL_DELAY_MS = 250;
     static constexpr int SCROLL_PAUSE_DELAY_MS = 1000;
 
-    static constexpr int ESP_RS_PIN = 4;
-    static constexpr int ESP_ENABLE_PIN = 12;
-    static constexpr int ESP_D0_PIN = 3;
-    static constexpr int ESP_D1_PIN = 1;
-    static constexpr int ESP_D2_PIN = 25;
-    static constexpr int ESP_D3_PIN = 26;
+    static constexpr int ESP_RS_PIN = 17;
+    static constexpr int ESP_ENABLE_PIN = 16;
+    static constexpr int ESP_D0_PIN = 25;
+    static constexpr int ESP_D1_PIN = 26;
+    static constexpr int ESP_D2_PIN = 0;
+    static constexpr int ESP_D3_PIN = 14;
 
     const char* m_stickyTextRowOne;
     const char* m_stickyTextRowTwo;

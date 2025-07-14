@@ -10,16 +10,20 @@ void Printer::displayStickyMessage()
 {
     m_lcd.setCursor(0, 0);
     m_lcd.print(m_stickyTextRowOne);
+    Serial.println(m_stickyTextRowOne);
     m_lcd.setCursor(0, 1);
     m_lcd.print(m_stickyTextRowTwo);
+    Serial.println(m_stickyTextRowTwo);
 }
 
 void Printer::displayFlashMessage(const char* rowOne, const char* rowTwo)
 {
     m_lcd.setCursor(0, 0);
     m_lcd.print(rowOne);
+    Serial.println(rowOne);
     m_lcd.setCursor(0, 1);
     m_lcd.print(rowTwo);
+    Serial.println(rowTwo);
     delay(FLASH_DISPLAY_TIME_MS);
     m_lcd.clear();
 }
@@ -28,8 +32,10 @@ void Printer::displayScrollMessage(const char* rowOne, const char* rowTwo)
 {
     m_lcd.setCursor(SCROLL_START_POSITION, 0);
     m_lcd.print(rowOne);
+    Serial.println(rowOne);
     m_lcd.setCursor(SCROLL_START_POSITION, 1);
     m_lcd.print(rowTwo);
+    Serial.println(rowTwo);
     // Scroll for twice the length of display
     for (int pos = 0; pos < SCROLL_LENGTH; pos++)
     {
