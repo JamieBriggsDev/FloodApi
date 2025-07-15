@@ -9,6 +9,12 @@
 // TEST(...)
 // TEST_F(...)
 
+#if _WIN32
+#include <stdio.h>  // for fdopen
+#include <windows.h> // for _MAX_PATH (on Windows)
+#endif
+
+
 #if defined(ARDUINO)
 #include <Arduino.h>
 
@@ -22,17 +28,27 @@ void setup()
 
     //::testing::InitGoogleTest();
     // if you plan to use GMock, replace the line above with
-     ::testing::InitGoogleMock();
+    //::testing::InitGoogleMock();
+
+    Serial.println("Starting tests...");
+    ::testing::InitGoogleMock();
+    Serial.println("Google Mock initialized");
+
 }
+
+bool testsComplete = false;
 
 void loop()
 {
-    // Run tests
-    if (RUN_ALL_TESTS())
-        ;
 
-    // sleep for 1 sec
+    if (!testsComplete)
+    {
+        RUN_ALL_TESTS();
+        testsComplete = true;
+        Serial.println("Tests completed");
+    }
     delay(1000);
+
 }
 
 #else
