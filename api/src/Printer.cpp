@@ -9,11 +9,11 @@
 void Printer::displayStickyMessage()
 {
     m_lcd.setCursor(0, 0);
-    m_lcd.print(m_stickyTextRowOne);
-    Serial.println(m_stickyTextRowOne);
+    m_lcd.print(m_stickyTextRowOne.c_str());
+    Serial.println(m_stickyTextRowOne.c_str());
     m_lcd.setCursor(0, 1);
-    m_lcd.print(m_stickyTextRowTwo);
-    Serial.println(m_stickyTextRowTwo);
+    m_lcd.print(m_stickyTextRowTwo.c_str());
+    Serial.println(m_stickyTextRowTwo.c_str());
 }
 
 void Printer::displayFlashMessage(const char* rowOne, const char* rowTwo)
@@ -57,6 +57,8 @@ void Printer::println(const char* rowOne, const char* rowTwo, PrintType printTyp
     if (printType == FLASH)
     {
         this->displayFlashMessage(rowOne, rowTwo);
+        // Helps to separate messages in monitor output
+        Serial.println("\n~~~~~~~~~~~~~~~\n");
     }
     else if (printType == STICKY)
     {
@@ -66,8 +68,12 @@ void Printer::println(const char* rowOne, const char* rowTwo, PrintType printTyp
     else
     {
         this->displayScrollMessage(rowOne, rowTwo);
+        // Helps to separate messages in monitor output
+        Serial.println("\n~~~~~~~~~~~~~~~\n");
     }
     this->displayStickyMessage();
+    // Helps to separate messages in monitor output
+    Serial.println("\n~~~~~~~~~~~~~~~\n");
 }
 
 

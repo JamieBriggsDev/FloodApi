@@ -35,8 +35,8 @@ class Printer
     static constexpr int ESP_D2_PIN = 0;
     static constexpr int ESP_D3_PIN = 14;
 
-    const char* m_stickyTextRowOne;
-    const char* m_stickyTextRowTwo;
+    std::string m_stickyTextRowOne;
+    std::string m_stickyTextRowTwo;
 
     LiquidCrystal m_lcd;
 

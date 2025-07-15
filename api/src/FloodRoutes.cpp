@@ -4,13 +4,16 @@
 
 #include "../include/FloodRoutes.h"
 
-#include <sstream>
 #include <Update.h>
+#include <aWOT.h>
 #include <cJSON.h>
+#include <chrono>
+#include <ctime>
+#include <iomanip>
+#include <sstream>
 
-#include "wifi_settings.h"
 #include "Printer.h"
-#include "Readings.h"
+#include "wifi_settings.h"
 
 
 void FloodRoutes::index(Request& request, Response& response)
@@ -85,8 +88,12 @@ void FloodRoutes::update(Request& request, Response& response)
 
 void FloodRoutes::river(Request& request, Response& response)
 {
+    auto start = std::chrono::system_clock::now();
     response.set("Content-Type", "application/json");
-
+    delay(25);
+    auto end = std::chrono::system_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+    response.set("Request-Time", std::to_string(duration.count()).c_str());
     response.println("{ \"readings\": [] }");
 }
 
@@ -95,24 +102,63 @@ void FloodRoutes::riverStation(Request& request, Response& response)
     response.set("Content-Type", "application/json");
 }
 
-FloodRoutes::FloodRoutes(Printer* printer) : m_server(PORT), m_printer(printer)
+// Add static member definition
+Printer* FloodRoutes::s_printer = nullptr;
+
+static std::string getMethodName(Request::MethodType method)
 {
+    switch (method)
+    {
+    case Request::GET:
+        return "GET";
+    case Request::POST:
+        return "PST";
+    case Request::PUT:
+        return "PUT";
+    case Request::PATCH:
+        return "PTC";
+    case Request::DELETE:
+        return "DEL";
+    default:
+        return "UNK";
+    }
+}
+
+void FloodRoutes::logRequest(Request& req, Response& res)
+{
+    std::ostringstream messageRowOne;
+    messageRowOne << "Request: ";
+    std::ostringstream messageRowTwo;
+    messageRowTwo << getMethodName(req.method()) << ": " << req.path();
+    s_printer->println(messageRowOne.str().c_str(), messageRowTwo.str().c_str(), FLASH);
+}
+
+FloodRoutes::FloodRoutes(Printer* printer) : m_server(PORT)
+{
+    s_printer = printer;
+
     WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
     while (WiFi.status() != WL_CONNECTED)
     {
         delay(500);
-        m_printer->println("Still connecting..", STICKY);
+        s_printer->println("Connecting..", FLASH);
     }
     // Display IP and PORT number
     std::ostringstream portMessage;
     portMessage << "Port: " << std::to_string(PORT);
-    m_printer->println(WiFi.localIP().toString().c_str(), portMessage.str().c_str(), STICKY);
+    s_printer->println(WiFi.localIP().toString().c_str(), portMessage.str().c_str(), STICKY);
 
-    m_app.header("Expect", m_expectHeader, 20);
+    // m_app.header("Expect", m_expectHeader, 20);
+    //  Loging request middleware
+    m_app.use(&logRequest);
+
     m_app.get("/", &index);
     m_app.post("/update", &update);
     // River API endpoints
     m_app.get("/river", &river);
+    m_app.post("/river", &river);
+    m_app.patch("/river", &river);
+    m_app.put("/river", &river);
     m_app.get("/river/{station}", &riverStation);
     m_server.begin();
 }

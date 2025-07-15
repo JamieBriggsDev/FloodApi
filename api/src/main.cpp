@@ -15,7 +15,7 @@ void setup()
     Serial.begin(115200);
     printer = new Printer();
     printer->println("Starting",
-                                   "Flood App!", FLASH);
+                                   "Flood App!", STICKY);
     flood_routes = new FloodRoutes(printer);
 }
 
