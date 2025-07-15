@@ -6,6 +6,8 @@
 #define PRINTER_H
 #include <LiquidCrystal.h>
 
+#include <utility>
+
 enum PrintType
 {
     SCROLL,
@@ -20,6 +22,18 @@ enum PrintType
  */
 class Printer
 {
+
+
+    std::string m_stickyTextRowOne;
+    std::string m_stickyTextRowTwo;
+
+    LiquidCrystal m_lcd;
+
+    void displayStickyMessage();
+    void displayFlashMessage(const char* rowOne, const char* rowTwo);
+    void displayScrollMessage(const char* rowOne, const char* rowTwo);
+
+public:
     static constexpr uint8_t LCD_COLUMNS = 16;
     static constexpr uint8_t LCD_ROWS = 2;
     static constexpr uint8_t SCROLL_START_POSITION = LCD_COLUMNS + 1;
@@ -35,17 +49,12 @@ class Printer
     static constexpr int ESP_D2_PIN = 0;
     static constexpr int ESP_D3_PIN = 14;
 
-    std::string m_stickyTextRowOne;
-    std::string m_stickyTextRowTwo;
+    explicit Printer(LiquidCrystal lcd) : m_lcd(std::move(lcd))
+    {
+        m_lcd.begin(LCD_COLUMNS, LCD_ROWS);
+        println("", "", STICKY);
+    }
 
-    LiquidCrystal m_lcd;
-
-    void displayStickyMessage();
-    void displayFlashMessage(const char* rowOne, const char* rowTwo);
-    void displayScrollMessage(const char* rowOne, const char* rowTwo);
-    void clearDisplay();
-
-public:
     Printer() : m_lcd(ESP_RS_PIN, ESP_ENABLE_PIN, ESP_D0_PIN, ESP_D1_PIN, ESP_D2_PIN, ESP_D3_PIN)
     {
         m_lcd.begin(LCD_COLUMNS, LCD_ROWS);
@@ -68,6 +77,12 @@ public:
      * @param printType How the text should be displayed (Default is FLASH)
      */
     void println(const char* rowOne, PrintType printType = FLASH);
+
+    /**
+     * Clears the current content displayed on the LCD screen.
+     * This resets the display to an empty state.
+     */
+    void clearDisplay();
 };
 
 
