@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Remote Monitor" type="ShConfigurationType">
-    <option name="SCRIPT_TEXT" value="platformio remote device monitor -e firebeetle2_esp32e" />
+  <configuration default="false" name="Native Test" type="ShConfigurationType">
+    <option name="SCRIPT_TEXT" value="platformio test -e native -vvv" />
     <option name="INDEPENDENT_SCRIPT_PATH" value="true" />
     <option name="SCRIPT_PATH" value="" />
     <option name="SCRIPT_OPTIONS" value="" />
