@@ -8,7 +8,7 @@
 #include <Arduino.h>
 #endif
 
-#include "logger/LoggerFactory.h"
+#include "logger/def_logger_factory.h"
 
 void LCDDisplay::displayStickyMessage() const
 {
