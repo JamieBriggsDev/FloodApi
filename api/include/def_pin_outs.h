@@ -12,5 +12,11 @@
 #define ESP_D2_PIN 0
 #define ESP_D3_PIN 14
 
+// MicroSD Module points
+#define MICRO_SD_CS_PIN 2
+// These three pins are standard on ESP32-E and should not be modified
+#define MICRO_SD_MOSI_PIN 23
+#define MICRO_SD_MISO_PIN 19
+#define MICRO_SD_SCK_PIN 18
 
 #endif // PINOUTS_H
