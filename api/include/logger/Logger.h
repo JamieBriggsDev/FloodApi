@@ -6,28 +6,16 @@
 #define LOGGER_H
 
 #include <mutex>
-#include <sstream>
-#include <string>
 
-#if defined(ARDUINO) || defined(ESP32)
-#include <Arduino.h>
-#else
+#include "ILogger.h"
+
 #include <ctime>
 #include <iostream>
-#endif
 
-enum class LogLevel
-{
-  DEBUG,
-  INFO,
-  WARNING,
-  ERROR
-};
-
-class Logger
+class Logger : public ILogger
 {
   public:
-  static Logger& getInstance()
+  static ILogger& getInstance()
   {
     static Logger instance;
     return instance;
@@ -37,31 +25,15 @@ class Logger
   Logger(const Logger&) = delete;
   Logger& operator=(const Logger&) = delete;
 
-  template <typename T>
-  void debug(const T& message)
-  {
-    log(LogLevel::DEBUG, message);
-  }
+  void debug(const char* message) override { log(LogLevel::DEBUG, message); }
 
-  template <typename T>
-  void info(const T& message)
-  {
-    log(LogLevel::INFO, message);
-  }
+  void info(const char* message) override { log(LogLevel::INFO, message); }
 
-  template <typename T>
-  void warning(const T& message)
-  {
-    log(LogLevel::WARNING, message);
-  }
+  void warning(const char* message) override { log(LogLevel::WARNING, message); }
 
-  template <typename T>
-  void error(const T& message)
-  {
-    log(LogLevel::ERROR, message);
-  }
+  void error(const char* message) override { log(LogLevel::ERROR, message); }
 
-  void setLogLevel(LogLevel level)
+  void setLogLevel(LogLevel level) override
   {
     std::lock_guard<std::mutex> lock(mutex_);
     minimumLogLevel_ = level;
@@ -70,28 +42,7 @@ class Logger
   private:
   Logger() = default;
 
-  template <typename T>
-  void log(LogLevel level, const T& message)
-  {
-    std::stringstream ss;
-    ss << message;
-    logChar(level, ss.str().c_str());
-  }
-
-  // Specialization for const char*
-  void log(LogLevel level, const char* message) { logChar(level, message); }
-
-  // Specialization for std::string
-  void log(LogLevel level, const std::string& message) { logChar(level, message.c_str()); }
-
-  // Specialization for string literal
-  template <size_t N>
-  void log(LogLevel level, const char (&message)[N])
-  {
-    logChar(level, message);
-  }
-
-  void logChar(LogLevel level, const char* message)
+  void log(LogLevel level, const char* message)
   {
     if (level < minimumLogLevel_)
       return;
@@ -126,12 +77,6 @@ class Logger
       levelStr = "UNKNOWN";
     }
 
-#if defined(ARDUINO) || defined(ESP32)
-    Serial.print("[");
-    Serial.print(levelStr);
-    Serial.print("] ");
-    Serial.println(message);
-#else
     if (strlen(message) > 0)
     {
       std::time_t now = std::time(nullptr);
@@ -139,15 +84,11 @@ class Logger
       std::strftime(timeStr, sizeof(timeStr), "%Y-%m-%d %H:%M:%S", std::localtime(&now));
       std::cout << " >> " << timeStr << " [" << levelStr << "] " << message << std::endl;
     }
-#endif
   }
 
   LogLevel minimumLogLevel_ = LogLevel::DEBUG;
   std::mutex mutex_;
 };
-
-// Convenience macro for easy access
-#define LOG Logger::getInstance()
 
 
 #endif // LOGGER_H

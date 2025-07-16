@@ -2,18 +2,18 @@
 // Created by Jamie Briggs on 10/07/2025.
 //
 
-#include "../include/LCDDisplay.h"
+#include "display/LCDDisplay.h"
 
 #if defined(ARDUINO)
 #include <Arduino.h>
 #endif
 
-#include "Logger.h"
+#include "logger/LoggerFactory.h"
 
 void LCDDisplay::displayStickyMessage() const
 {
-  LOG.info(m_stickyTextRowOne);
-  LOG.info(m_stickyTextRowTwo);
+  LOG.info(m_stickyTextRowOne.c_str());
+  LOG.info(m_stickyTextRowTwo.c_str());
 
   m_lcd.setCursor(0, 0);
   m_lcd.print(m_stickyTextRowOne.c_str());

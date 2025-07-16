@@ -6,9 +6,9 @@
 #include <gtest/gtest.h>
 
 
-#include "../include/ILiquidCrystalAdapter.h"
-#include "../include/LCDDisplay.h"
-#include "../src/LCDDisplay.cpp"
+#include "display/ILiquidCrystalAdapter.h"
+#include "display/LCDDisplay.h"
+#include "display/LCDDisplay.cpp"
 
 class MockLiquidCrystal : public ILiquidCrystalAdapter
 {

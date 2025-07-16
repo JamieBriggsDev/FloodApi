@@ -2,7 +2,7 @@
 // Created by Jamie Briggs on 10/07/2025.
 //
 
-#include "../include/FloodRoutes.h"
+#include "FloodRoutes.h"
 
 #include <Update.h>
 #include <aWOT.h>
@@ -12,7 +12,7 @@
 #include <iomanip>
 #include <sstream>
 
-#include "IDisplay.h"
+#include "display/IDisplay.h"
 #include "_wifi_settings.h"
 
 // Add static member definition
