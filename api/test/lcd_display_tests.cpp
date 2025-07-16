@@ -7,8 +7,8 @@
 
 
 #include "../include/ILiquidCrystalAdapter.h"
-#include "../include/Printer.h"
-#include "../src/Printer.cpp"
+#include "../include/LCDDisplay.h"
+#include "../src/LCDDisplay.cpp"
 
 class MockLiquidCrystal : public ILiquidCrystalAdapter
 {
@@ -22,16 +22,16 @@ class MockLiquidCrystal : public ILiquidCrystalAdapter
 
 
 // Test fixture
-class PrinterTest : public ::testing::Test
+class LCDDisplayTests : public ::testing::Test
 {
   protected:
   testing::NiceMock<MockLiquidCrystal>* mockLcd;
-  Printer* printer;
+  LCDDisplay* printer;
 
   void SetUp() override
   {
     mockLcd = new testing::NiceMock<MockLiquidCrystal>();
-    printer = new Printer(*mockLcd);
+    printer = new LCDDisplay(*mockLcd);
   }
 
   void TearDown() override
@@ -42,7 +42,7 @@ class PrinterTest : public ::testing::Test
 };
 
 // Test clearDisplay
-TEST_F(PrinterTest, ClearDisplay)
+TEST_F(LCDDisplayTests, ClearDisplay)
 {
   // Given
   EXPECT_CALL(*mockLcd, clear()).Times(1);
@@ -51,7 +51,7 @@ TEST_F(PrinterTest, ClearDisplay)
   printer->clearDisplay();
 }
 
-TEST_F(PrinterTest, Println_OneRow_Sticky)
+TEST_F(LCDDisplayTests, displayText_OneRow_Sticky)
 {
   // Given
   EXPECT_CALL(*mockLcd, setCursor(0, 0)).Times(1);
@@ -60,10 +60,10 @@ TEST_F(PrinterTest, Println_OneRow_Sticky)
   EXPECT_CALL(*mockLcd, print(testing::StrEq(""))).Times(1);
 
   // When
-  printer->println("Row one", STICKY);
+  printer->displayText("Row one", STICKY);
 }
 
-TEST_F(PrinterTest, Println_TwoRows_Sticky)
+TEST_F(LCDDisplayTests, displayText_TwoRows_Sticky)
 {
   // Given
   EXPECT_CALL(*mockLcd, setCursor(0, 0)).Times(1);
@@ -72,10 +72,10 @@ TEST_F(PrinterTest, Println_TwoRows_Sticky)
   EXPECT_CALL(*mockLcd, print(testing::StrEq("Row two"))).Times(1);
 
   // When
-  printer->println("Row one", "Row two", STICKY);
+  printer->displayText("Row one", "Row two", STICKY);
 }
 
-TEST_F(PrinterTest, Println_OneRow_Flash)
+TEST_F(LCDDisplayTests, displayText_OneRow_Flash)
 {
   // Given
   // Both called twice for initial FLASH then STICKY call.
@@ -88,11 +88,11 @@ TEST_F(PrinterTest, Println_OneRow_Flash)
   EXPECT_CALL(*mockLcd, clear()).Times(2);
 
   // When
-  printer->println("Row one", FLASH);
+  printer->displayText("Row one", FLASH);
 }
 
 
-TEST_F(PrinterTest, Println_OneRow_Scroll)
+TEST_F(LCDDisplayTests, displayText_OneRow_Scroll)
 {
   // Given
   EXPECT_CALL(*mockLcd, setCursor(printer->SCROLL_START_POSITION, 0)).Times(1);
@@ -108,10 +108,10 @@ TEST_F(PrinterTest, Println_OneRow_Scroll)
   EXPECT_CALL(*mockLcd, setCursor(0, 1)).Times(1);
 
   // When
-  printer->println("Row one", SCROLL);
+  printer->displayText("Row one", SCROLL);
 }
 
-TEST_F(PrinterTest, Println_TwoRows_Scroll)
+TEST_F(LCDDisplayTests, displayText_TwoRows_Scroll)
 {
   // Given
   EXPECT_CALL(*mockLcd, setCursor(printer->SCROLL_START_POSITION, 0)).Times(1);
@@ -128,5 +128,5 @@ TEST_F(PrinterTest, Println_TwoRows_Scroll)
   EXPECT_CALL(*mockLcd, setCursor(0, 1)).Times(1);
 
   // When
-  printer->println("Row one", "Row two", SCROLL);
+  printer->displayText("Row one", "Row two", SCROLL);
 }

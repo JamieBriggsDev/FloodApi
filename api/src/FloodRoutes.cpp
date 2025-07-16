@@ -12,9 +12,11 @@
 #include <iomanip>
 #include <sstream>
 
-#include "Printer.h"
-#include "wifi_settings.h"
+#include "IDisplay.h"
+#include "_wifi_settings.h"
 
+// Add static member definition
+IDisplay* FloodRoutes::s_display = nullptr;
 
 void FloodRoutes::index(Request& request, Response& response)
 {
@@ -102,8 +104,7 @@ void FloodRoutes::riverStation(Request& request, Response& response)
   response.set("Content-Type", "application/json");
 }
 
-// Add static member definition
-Printer* FloodRoutes::s_printer = nullptr;
+
 
 static std::string getMethodName(Request::MethodType method)
 {
@@ -130,23 +131,23 @@ void FloodRoutes::logRequest(Request& req, Response& res)
   messageRowOne << "Request: ";
   std::ostringstream messageRowTwo;
   messageRowTwo << getMethodName(req.method()) << ": " << req.path();
-  s_printer->println(messageRowOne.str().c_str(), messageRowTwo.str().c_str(), FLASH);
+  s_display->displayText(messageRowOne.str().c_str(), messageRowTwo.str().c_str(), FLASH);
 }
 
-FloodRoutes::FloodRoutes(Printer* printer) : m_server(PORT)
+FloodRoutes::FloodRoutes(IDisplay* printer) : m_server(PORT)
 {
-  s_printer = printer;
+  s_display = printer;
 
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
   while (WiFi.status() != WL_CONNECTED)
   {
     delay(500);
-    s_printer->println("Connecting..", FLASH);
+    s_display->displayText("Connecting..", FLASH);
   }
   // Display IP and PORT number
   std::ostringstream portMessage;
   portMessage << "Port: " << std::to_string(PORT);
-  s_printer->println(WiFi.localIP().toString().c_str(), portMessage.str().c_str(), STICKY);
+  s_display->displayText(WiFi.localIP().toString().c_str(), portMessage.str().c_str(), STICKY);
 
   // m_app.header("Expect", m_expectHeader, 20);
   //  Loging request middleware

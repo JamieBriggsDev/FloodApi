@@ -8,7 +8,7 @@
 #include <WiFi.h>
 #include <aWOT.h>
 
-#include "Printer.h"
+#include "IDisplay.h"
 
 
 class FloodRoutes
@@ -23,11 +23,11 @@ class FloodRoutes
   static void riverStation(Request& request, Response& response);
   WiFiServer m_server;
   Application m_app;
-  static Printer* s_printer;
+  static IDisplay* s_display;
   char m_expectHeader[20]{};
 
   public:
-  FloodRoutes(Printer* printer);
+  FloodRoutes(IDisplay* printer);
   void loop();
 };
 

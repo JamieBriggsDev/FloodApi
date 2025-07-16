@@ -9,31 +9,27 @@
 
 #include <string>
 
+#include "IDisplay.h"
 
-enum PrintType
-{
-  SCROLL,
-  FLASH,
-  STICKY
-};
 
 /**
  * Handles operations for printing text on an LCD screen.
  * Manages various display modes such as flashing or scrolling and supports
  * both single-line and two-line text printing.
  */
-class Printer
+class LCDDisplay : public IDisplay
 {
   std::string m_stickyTextRowOne;
   std::string m_stickyTextRowTwo;
 
-  ILiquidCrystalAdapter& m_lcd; // Reference to interface
+  // Reference to interface
+  ILiquidCrystalAdapter& m_lcd;
 
   void displayStickyMessage() const;
   void displayFlashMessage(const char* rowOne, const char* rowTwo) const;
   void displayScrollMessage(const char* rowOne, const char* rowTwo) const;
 
-  public:
+public:
   static constexpr uint8_t LCD_COLUMNS = 16;
   static constexpr uint8_t LCD_ROWS = 2;
   static constexpr uint8_t SCROLL_START_POSITION = LCD_COLUMNS + 1;
@@ -42,10 +38,10 @@ class Printer
   static constexpr int SCROLL_DELAY_MS = 250;
   static constexpr int SCROLL_PAUSE_DELAY_MS = 1000;
 
-  explicit Printer(ILiquidCrystalAdapter& lcd) : m_lcd(lcd)
+  explicit LCDDisplay(ILiquidCrystalAdapter& lcd) : m_lcd(lcd)
   {
     m_lcd.begin(LCD_COLUMNS, LCD_ROWS);
-    println("", "", STICKY);
+    LCDDisplay::displayText("", "", STICKY);
   }
 
   /**
@@ -56,7 +52,7 @@ class Printer
    * @param rowTwo Second row of text to display (Default is STICKY)
    * @param printType How the text should be displayed
    */
-  void println(const char* rowOne, const char* rowTwo, PrintType printType = STICKY);
+  void displayText(const char* rowOne, const char* rowTwo, PrintType printType = STICKY) override;
 
   /**
    * Prints a single row of text onto an LCD screen. If print type is not STICKY, after displaying the message,
@@ -65,13 +61,13 @@ class Printer
    * @param rowOne Row of text to display
    * @param printType How the text should be displayed (Default is FLASH)
    */
-  void println(const char* rowOne, PrintType printType = STICKY);
+  void displayText(const char* rowOne, PrintType printType = STICKY) override;
 
   /**
    * Clears the current content displayed on the LCD screen.
    * This resets the display to an empty state.
    */
-  void clearDisplay() const;
+  void clearDisplay() const override;
 };
 
 

@@ -1,5 +1,5 @@
 .pio
 
-include/wifi_settings.h
+include/_wifi_settings.h
 /.vscode/
 /.idea/

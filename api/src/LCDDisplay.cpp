@@ -2,7 +2,7 @@
 // Created by Jamie Briggs on 10/07/2025.
 //
 
-#include "../include/Printer.h"
+#include "../include/LCDDisplay.h"
 
 #if defined(ARDUINO)
 #include <Arduino.h>
@@ -10,7 +10,7 @@
 
 #include "Logger.h"
 
-void Printer::displayStickyMessage() const
+void LCDDisplay::displayStickyMessage() const
 {
   LOG.info(m_stickyTextRowOne);
   LOG.info(m_stickyTextRowTwo);
@@ -21,7 +21,7 @@ void Printer::displayStickyMessage() const
   m_lcd.print(m_stickyTextRowTwo.c_str());
 }
 
-void Printer::displayFlashMessage(const char* rowOne, const char* rowTwo) const
+void LCDDisplay::displayFlashMessage(const char* rowOne, const char* rowTwo) const
 {
   LOG.info(rowOne);
   LOG.info(rowTwo);
@@ -36,7 +36,7 @@ void Printer::displayFlashMessage(const char* rowOne, const char* rowTwo) const
   m_lcd.clear();
 }
 
-void Printer::displayScrollMessage(const char* rowOne, const char* rowTwo) const
+void LCDDisplay::displayScrollMessage(const char* rowOne, const char* rowTwo) const
 {
   LOG.info(rowOne);
   LOG.info(rowTwo);
@@ -59,9 +59,9 @@ void Printer::displayScrollMessage(const char* rowOne, const char* rowTwo) const
   m_lcd.clear();
 }
 
-void Printer::clearDisplay() const { m_lcd.clear(); }
+void LCDDisplay::clearDisplay() const { m_lcd.clear(); }
 
-void Printer::println(const char* rowOne, const char* rowTwo, PrintType printType)
+void LCDDisplay::displayText(const char* rowOne, const char* rowTwo, PrintType printType)
 {
   m_lcd.clear();
   if (printType == FLASH)
@@ -87,8 +87,8 @@ void Printer::println(const char* rowOne, const char* rowTwo, PrintType printTyp
 }
 
 
-void Printer::println(const char* rowOne, PrintType printType)
+void LCDDisplay::displayText(const char* rowOne, PrintType printType)
 {
   LOG.debug("Clearing liquid display");
-  this->println(rowOne, "", printType);
+  this->displayText(rowOne, "", printType);
 }
