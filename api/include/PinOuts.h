@@ -13,4 +13,4 @@
 #define ESP_D3_PIN 14
 
 
-#endif //PINOUTS_H
+#endif // PINOUTS_H

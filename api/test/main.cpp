@@ -10,7 +10,7 @@
 // TEST_F(...)
 
 #if _WIN32
-#include <stdio.h>  // for fdopen
+#include <stdio.h> // for fdopen
 #include <windows.h> // for _MAX_PATH (on Windows)
 #endif
 
@@ -22,18 +22,17 @@
 
 void setup()
 {
-    // should be the same value as for the `test_speed` option in "platformio.ini"
-    // default value is test_speed=115200
-    Serial.begin(115200);
+  // should be the same value as for the `test_speed` option in "platformio.ini"
+  // default value is test_speed=115200
+  Serial.begin(115200);
 
-    //::testing::InitGoogleTest();
-    // if you plan to use GMock, replace the line above with
-    //::testing::InitGoogleMock();
+  //::testing::InitGoogleTest();
+  // if you plan to use GMock, replace the line above with
+  //::testing::InitGoogleMock();
 
-    Serial.println("Starting tests...");
-    ::testing::InitGoogleMock();
-    Serial.println("Google Mock initialized");
-
+  Serial.println("Starting tests...");
+  ::testing::InitGoogleMock();
+  Serial.println("Google Mock initialized");
 }
 
 bool testsComplete = false;
@@ -41,27 +40,26 @@ bool testsComplete = false;
 void loop()
 {
 
-    if (!testsComplete)
-    {
-        RUN_ALL_TESTS();
-        testsComplete = true;
-        Serial.println("Tests completed");
-    }
-    delay(1000);
-
+  if (!testsComplete)
+  {
+    RUN_ALL_TESTS();
+    testsComplete = true;
+    Serial.println("Tests completed");
+  }
+  delay(1000);
 }
 
 #else
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
-    ::testing::InitGoogleTest(&argc, argv);
-    // if you plan to use GMock, replace the line above with
-    // ::testing::InitGoogleMock(&argc, argv);
+  ::testing::InitGoogleTest(&argc, argv);
+  // if you plan to use GMock, replace the line above with
+  // ::testing::InitGoogleMock(&argc, argv);
 
-    if (RUN_ALL_TESTS())
-        ;
+  if (RUN_ALL_TESTS())
+    ;
 
-    // Always return zero-code and allow PlatformIO to parse results
-    return 0;
+  // Always return zero-code and allow PlatformIO to parse results
+  return 0;
 }
 #endif

@@ -9,12 +9,12 @@
 
 struct Reading
 {
-    double level;
-    std::chrono::system_clock::time_point timestamp;
+  double level;
+  std::chrono::system_clock::time_point timestamp;
 };
 struct Readings
 {
-    std::vector<Reading> readings;
+  std::vector<Reading> readings;
 };
 
-#endif //READING_H
+#endif // READING_H

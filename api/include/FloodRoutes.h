@@ -11,24 +11,25 @@
 #include "Printer.h"
 
 
-class FloodRoutes {
-private:
-    static constexpr uint8_t PORT = 80;
+class FloodRoutes
+{
+  private:
+  static constexpr uint8_t PORT = 80;
 
-    static void logRequest(Request &request, Response &response);
-    static void index(Request &request, Response &response);
-    static void update(Request &request, Response &response);
-    static void river(Request &request, Response &response);
-    static void riverStation(Request &request, Response &response);
-    WiFiServer m_server;
-    Application m_app;
-    static Printer* s_printer;
-    char m_expectHeader[20]{};
-public:
-    FloodRoutes(Printer* printer);
-    void loop();
+  static void logRequest(Request& request, Response& response);
+  static void index(Request& request, Response& response);
+  static void update(Request& request, Response& response);
+  static void river(Request& request, Response& response);
+  static void riverStation(Request& request, Response& response);
+  WiFiServer m_server;
+  Application m_app;
+  static Printer* s_printer;
+  char m_expectHeader[20]{};
+
+  public:
+  FloodRoutes(Printer* printer);
+  void loop();
 };
 
 
-
-#endif //FLOODROUTES_H
+#endif // FLOODROUTES_H
