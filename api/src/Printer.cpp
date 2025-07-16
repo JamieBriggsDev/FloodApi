@@ -8,14 +8,12 @@
 #include <Arduino.h>
 #endif
 
-#include "LiquidCrystalAdapter.h"
+#include "Logger.h"
 
-void Printer::displayStickyMessage()
+void Printer::displayStickyMessage() const
 {
-#if defined(ARDUINO)
-    Serial.println(m_stickyTextRowOne.c_str());
-    Serial.println(m_stickyTextRowTwo.c_str());
-#endif
+    LOG.info(m_stickyTextRowOne);
+    LOG.info(m_stickyTextRowTwo);
 
     m_lcd.setCursor(0, 0);
     m_lcd.print(m_stickyTextRowOne.c_str());
@@ -23,12 +21,10 @@ void Printer::displayStickyMessage()
     m_lcd.print(m_stickyTextRowTwo.c_str());
 }
 
-void Printer::displayFlashMessage(const char* rowOne, const char* rowTwo)
+void Printer::displayFlashMessage(const char* rowOne, const char* rowTwo) const
 {
-#if defined(ARDUINO)
-    Serial.println(rowOne);
-    Serial.println(rowTwo);
-#endif
+    LOG.info(rowOne);
+    LOG.info(rowTwo);
 
     m_lcd.setCursor(0, 0);
     m_lcd.print(rowOne);
@@ -40,12 +36,11 @@ void Printer::displayFlashMessage(const char* rowOne, const char* rowTwo)
     m_lcd.clear();
 }
 
-void Printer::displayScrollMessage(const char* rowOne, const char* rowTwo)
+void Printer::displayScrollMessage(const char* rowOne, const char* rowTwo) const
 {
-#if defined(ARDUINO)
-    Serial.println(rowOne);
-    Serial.println(rowTwo);
-#endif
+    LOG.info(rowOne);
+    LOG.info(rowTwo);
+
     m_lcd.setCursor(SCROLL_START_POSITION, 0);
     m_lcd.print(rowOne);
     m_lcd.setCursor(SCROLL_START_POSITION, 1);
@@ -64,8 +59,7 @@ void Printer::displayScrollMessage(const char* rowOne, const char* rowTwo)
     m_lcd.clear();
 }
 
-void Printer::clearDisplay()
-{
+void Printer::clearDisplay() const {
     m_lcd.clear();
 }
 
@@ -75,10 +69,8 @@ void Printer::println(const char* rowOne, const char* rowTwo, PrintType printTyp
     if (printType == FLASH)
     {
         this->displayFlashMessage(rowOne, rowTwo);
-#if defined(ARDUINO)
         // Helps to separate messages in monitor output
-        Serial.println("\n~~~~~~~~~~~~~~~\n");
-#endif
+        LOG.info("\n~~~~~~~~~~~~~~~\n");
     }
     else if (printType == STICKY)
     {
@@ -88,16 +80,12 @@ void Printer::println(const char* rowOne, const char* rowTwo, PrintType printTyp
     else
     {
         this->displayScrollMessage(rowOne, rowTwo);
-#if defined(ARDUINO)
         // Helps to separate messages in monitor output
-        Serial.println("\n~~~~~~~~~~~~~~~\n");
-#endif
+        LOG.info("\n~~~~~~~~~~~~~~~\n");
     }
     this->displayStickyMessage();
-#if defined(ARDUINO)
     // Helps to separate messages in monitor output
-    Serial.println("\n~~~~~~~~~~~~~~~\n");
-#endif
+    LOG.info("\n~~~~~~~~~~~~~~~\n");
 }
 
 

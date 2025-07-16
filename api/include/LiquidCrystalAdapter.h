@@ -7,17 +7,10 @@
 
 #include <LiquidCrystal.h>
 
-class ILiquidCrystal {
-public:
-    virtual void clear() = 0;
-    virtual void print(const char*) = 0;
-    virtual void setCursor(uint8_t, uint8_t) = 0;
-    virtual void begin(uint8_t, uint8_t) = 0;
-    virtual void scrollDisplayLeft() = 0;
-};
+#include "ILiquidCrystalAdapter.h"
 
 
-class LiquidCrystalAdapter : public ILiquidCrystal {
+class LiquidCrystalAdapter : public ILiquidCrystalAdapter {
     LiquidCrystal m_lcd;
 
 public:

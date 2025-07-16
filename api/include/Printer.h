@@ -5,12 +5,10 @@
 #ifndef PRINTER_H
 #define PRINTER_H
 
-#include "LiquidCrystalAdapter.h"
+#include "ILiquidCrystalAdapter.h"
 
 #include <string>
 
-// Interface declaration
-class ILiquidCrystal;
 
 enum PrintType
 {
@@ -19,8 +17,6 @@ enum PrintType
     STICKY
 };
 
-
-
 /**
  * Handles operations for printing text on an LCD screen.
  * Manages various display modes such as flashing or scrolling and supports
@@ -28,16 +24,14 @@ enum PrintType
  */
 class Printer
 {
-
-
     std::string m_stickyTextRowOne;
     std::string m_stickyTextRowTwo;
 
-    ILiquidCrystal& m_lcd; // Reference to interface
+    ILiquidCrystalAdapter& m_lcd; // Reference to interface
 
-    void displayStickyMessage();
-    void displayFlashMessage(const char* rowOne, const char* rowTwo);
-    void displayScrollMessage(const char* rowOne, const char* rowTwo);
+    void displayStickyMessage() const;
+    void displayFlashMessage(const char* rowOne, const char* rowTwo) const;
+    void displayScrollMessage(const char* rowOne, const char* rowTwo) const;
 
 public:
     static constexpr uint8_t LCD_COLUMNS = 16;
@@ -48,7 +42,7 @@ public:
     static constexpr int SCROLL_DELAY_MS = 250;
     static constexpr int SCROLL_PAUSE_DELAY_MS = 1000;
 
-    explicit Printer(ILiquidCrystal& lcd) : m_lcd(lcd)
+    explicit Printer(ILiquidCrystalAdapter& lcd) : m_lcd(lcd)
     {
         m_lcd.begin(LCD_COLUMNS, LCD_ROWS);
         println("", "", STICKY);
@@ -75,7 +69,7 @@ public:
      * Clears the current content displayed on the LCD screen.
      * This resets the display to an empty state.
      */
-    void clearDisplay();
+    void clearDisplay() const;
 };
 
 

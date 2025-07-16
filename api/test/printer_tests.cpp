@@ -6,11 +6,11 @@
 #include <gtest/gtest.h>
 
 
-#include "../include/LiquidCrystalAdapter.h"
+#include "../include/ILiquidCrystalAdapter.h"
 #include "../include/Printer.h"
 #include "../src/Printer.cpp"
 
-class MockLiquidCrystal : public LiquidCrystalAdapter {
+class MockLiquidCrystal : public ILiquidCrystalAdapter {
 public:
     MOCK_METHOD(void, clear, (), (override));
     MOCK_METHOD(void, print, (const char*), (override));
