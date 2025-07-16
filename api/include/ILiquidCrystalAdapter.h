@@ -4,7 +4,6 @@
 
 #ifndef ILIQUIDCRYSTAL_H
 #define ILIQUIDCRYSTAL_H
-#include <cstdint>
 
 class ILiquidCrystalAdapter {
 public:

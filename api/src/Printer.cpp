@@ -91,6 +91,6 @@ void Printer::println(const char* rowOne, const char* rowTwo, PrintType printTyp
 
 void Printer::println(const char* rowOne, PrintType printType)
 {
-    m_lcd.clear();
+    LOG.debug("Clearing liquid display");
     this->println(rowOne, "", printType);
 }

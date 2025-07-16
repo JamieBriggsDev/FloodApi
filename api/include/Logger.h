@@ -100,7 +100,12 @@ private:
         Serial.print("[");
         Serial.print(levelStr);
         Serial.print("] ");
-        Serial.println(message);
+        // Convert std::string to const char* if necessary
+        if (std::is_same_v<T, std::string>) {
+            Serial.println(message.c_str());
+        } else {
+            Serial.println(message);
+        }
 #else
         std::time_t now = std::time(nullptr);
         char timeStr[20];

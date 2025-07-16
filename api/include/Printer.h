@@ -49,21 +49,23 @@ public:
     }
 
     /**
-     * Prints two rows of text onto an LCD screen.
+     * Prints two rows of text onto an LCD screen. If print type is not STICKY, after displaying the message, it will
+     * display the previous sticky message.
      *
      * @param rowOne First row of text to display
-     * @param rowTwo Second row of text to display (Default is FLASH)
+     * @param rowTwo Second row of text to display (Default is STICKY)
      * @param printType How the text should be displayed
      */
-    void println(const char* rowOne, const char* rowTwo, PrintType printType = FLASH);
+    void println(const char* rowOne, const char* rowTwo, PrintType printType = STICKY);
 
     /**
-     * Prints a single row of text onto an LCD screen.
+     * Prints a single row of text onto an LCD screen. If print type is not STICKY, after displaying the message,
+     * it will display the previous sticky message.
      *
      * @param rowOne Row of text to display
      * @param printType How the text should be displayed (Default is FLASH)
      */
-    void println(const char* rowOne, PrintType printType = FLASH);
+    void println(const char* rowOne, PrintType printType = STICKY);
 
     /**
      * Clears the current content displayed on the LCD screen.
