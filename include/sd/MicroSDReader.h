@@ -9,6 +9,8 @@
 #include "SD.h"
 #include "SPI.h"
 
+#include <vector>
+
 struct FileEntry
 {
   String name;
