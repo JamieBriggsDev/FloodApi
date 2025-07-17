@@ -13,8 +13,7 @@
 
 int openDb(const char* filename, sqlite3** db)
 {
-  LOG.info("Attempting to open database at:");
-  LOG.info(filename);
+  LOG.info_f("Attempting to open database at: %s", filename);
 
   sqlite3_config(SQLITE_CONFIG_SINGLETHREAD);
 
@@ -24,9 +23,7 @@ int openDb(const char* filename, sqlite3** db)
 
   if (rc)
   {
-    LOG.error("Can't open database: MSG");
-    LOG.error(sqlite3_errmsg(*db));
-    LOG.error(std::to_string(rc).c_str());
+    LOG.error_f("Can't open database: %s", sqlite3_errmsg(*db));
     return rc;
   }
 
@@ -41,8 +38,7 @@ int openDb(const char* filename, sqlite3** db)
     rc = sqlite3_exec(*db, pragma, nullptr, nullptr, &errMsg);
     if (rc != SQLITE_OK)
     {
-      LOG.error("Failed to set pragma: ");
-      LOG.error(pragma);
+      LOG.error_f("Failed to set pragma: %s", pragma);
       LOG.error(errMsg);
       sqlite3_free(errMsg);
       return rc;
@@ -50,21 +46,19 @@ int openDb(const char* filename, sqlite3** db)
   }
 
 
-  LOG.info("Opened database successfully:");
-  LOG.info(filename);
+  LOG.info_f("Opened database successfully: %s", filename);
   return rc;
 }
 
 const char* data = "Callback function called";
 static int callback(void* data, int argc, char** argv, char** azColName)
 {
-  int i;
-  Serial.printf("%s: ", (const char*)data);
-  for (i = 0; i < argc; i++)
+  LOG.info_f("%s: ", (const char*)data);
+  for (int i = 0; i < argc; i++)
   {
-    Serial.printf("%s = %s\n", azColName[i], argv[i] ? argv[i] : "NULL");
+    LOG.info_f("%s = %s\n", azColName[i], argv[i] ? argv[i] : "NULL");
   }
-  Serial.printf("\n");
+  LOG.info("\n");
   return 0;
 }
 
@@ -76,17 +70,14 @@ int db_exec(sqlite3* db, const char* sql)
   int rc = sqlite3_exec(db, sql, callback, (void*)data, &zErrMsg);
   if (rc != SQLITE_OK)
   {
-    LOG.error("SQL Error:");
-    LOG.error(zErrMsg);
+    LOG.error_f("SQL Error: %s", zErrMsg);
     sqlite3_free(zErrMsg);
   }
   else
   {
-    LOG.info("Operation done successfully: ");
-    LOG.info(sql);
+    LOG.info_f("Operation done successfully: %s", sql);
   }
-  LOG.info("Time taken: ");
-  LOG.info(micros() - start);
+  LOG.info_f("Time taken: %d", micros() - start);
   return rc;
 }
 
@@ -185,22 +176,21 @@ void FloodRepository::init()
     throw std::runtime_error("No SD card attached");
   }
 
-  LOG.info("Initializing SQLite3");
+  LOG.info("Initializing SQLite3...");
   int initialize = sqlite3_initialize();
   if (initialize != SQLITE_OK)
   {
-    LOG.error("Failed to initialize SQLite3:");
-    LOG.error(initialize);
+    LOG.error_f("Failed to initialize SQLite3: %s", initialize);
     throw std::runtime_error("Failed to initialize SQLite3");
   }
 
-  LOG.debug("Checking database file header:");
+  LOG.debug("Checking database file header...");
   dumpFileHeader("/flood_downgraded.db");
 
-  LOG.debug("Verifying database structure:");
+  LOG.debug("Verifying database structure...");
   verifyDatabaseStructure("/flood_downgraded.db");
 
-  LOG.debug("Opening DB:");
+  LOG.debug("Opening DB...");
   if (openDb("/sd/flood_downgraded.db", &m_floodDb) != SQLITE_OK) {
     LOG.error("Failed to open database");
     throw new std::runtime_error("Failed to open database");

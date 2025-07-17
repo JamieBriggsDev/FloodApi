@@ -34,9 +34,17 @@ public:
   static constexpr uint8_t LCD_ROWS = 2;
   static constexpr uint8_t SCROLL_START_POSITION = LCD_COLUMNS + 1;
   static constexpr uint8_t SCROLL_LENGTH = 32;
+#ifdef UNIT_TEST
+  // Makes the tests go quicker, and I'm not testing for timings.
+  static constexpr int FLASH_DISPLAY_TIME_MS = 0;
+  static constexpr int SCROLL_DELAY_MS = 0;
+  static constexpr int SCROLL_PAUSE_DELAY_MS = 0;
+#else
   static constexpr int FLASH_DISPLAY_TIME_MS = 3000;
   static constexpr int SCROLL_DELAY_MS = 250;
   static constexpr int SCROLL_PAUSE_DELAY_MS = 1000;
+#endif
+
 
   explicit LCDDisplay(ILiquidCrystalAdapter& lcd) : m_lcd(lcd)
   {

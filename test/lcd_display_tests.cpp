@@ -10,7 +10,6 @@
 #include "display/LCDDisplay.h"
 #include "display/LCDDisplay.cpp"
 
-#if false
 
 class MockLiquidCrystal : public ILiquidCrystalAdapter
 {
@@ -134,4 +133,3 @@ TEST_F(LCDDisplayTests, displayText_TwoRows_Scroll)
 }
 
 
-#endif

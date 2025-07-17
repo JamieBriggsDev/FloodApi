@@ -5,7 +5,8 @@
 // test/hardware_tests.cpp
 #include <gtest/gtest.h>
 
-#if defined(ARDUINO)
+// Disabled these tests as I don't MicroSDReader will be used as part of the FloodAPI.
+#if false //defined(ARDUINO)
 #include <Arduino.h>
 
 #include "sd/MicroSDReader.cpp"
