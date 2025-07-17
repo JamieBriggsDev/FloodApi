@@ -5,7 +5,7 @@
 #ifndef CREDENTIALS_H
 #define CREDENTIALS_H
 
-const char* WIFI_SSID = "YOUR_SSID";
-const char* WIFI_PASSWORD = "YOUR_PASSWORD";
+auto WIFI_SSID = "YOUR_SSID";
+auto WIFI_PASSWORD = "YOUR_PASSWORD";
 
 #endif //CREDENTIALS_H
