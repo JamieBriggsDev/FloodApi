@@ -74,19 +74,9 @@ class ILogger
     this->debug(msg.c_str());
   }
 
-  void debug(const long msg)
-  {
-    debug(String(msg));
-  }
-
   void info(const String& msg)
   {
     this->info(msg.c_str());
-  }
-
-  void info(const long msg)
-  {
-    info(String(msg));
   }
 
   void warning(const String& msg)
@@ -99,10 +89,43 @@ class ILogger
     this->error(msg.c_str());
   }
 
+  // std::string overloads
+  void debug(const std::string msg)
+  {
+    this->debug(msg.c_str());
+  }
+
+  void info(const std::string msg)
+  {
+    this->info(msg.c_str());
+  }
+
+  void warning(const std::string msg)
+  {
+    this->warning(msg.c_str());
+  }
+
+  void error(const std::string msg)
+  {
+    this->error(msg.c_str());
+  }
+
+  // Long overloads
+  void debug(const long msg)
+  {
+    debug(String(msg));
+  }
+
+  void info(const long msg)
+  {
+    info(String(msg));
+  }
+
   void error(const int msg)
   {
     this->error(String(msg));
   }
+
 
 };
 

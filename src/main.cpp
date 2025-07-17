@@ -4,8 +4,8 @@
 
 #include <Arduino.h>
 
-#include "../include/display/LCDDisplay.h"
-#include "../include/display/LiquidCrystalAdapter.h"
+#include "../src/display/LCDDisplay.h"
+#include "../src/display/LiquidCrystalAdapter.h"
 #include "FloodRoutes.h"
 #include "def_pin_outs.h"
 
