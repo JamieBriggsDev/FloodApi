@@ -8,6 +8,7 @@
 #include <WiFi.h>
 #include <aWOT.h>
 
+#include "IFloodMapper.h"
 #include "db/IFloodRepository.h"
 #include "display/IDisplay.h"
 
@@ -23,10 +24,11 @@ class FloodRoutes
   Application m_app;
   static IFloodRepository* s_floodRepository;
   static IDisplay* s_display;
+  static IFloodMapper* s_floodMapper;
   char m_expectHeader[20]{};
 
   public:
-  FloodRoutes(IDisplay* display, IFloodRepository* flood_repository);
+  FloodRoutes(IDisplay* display, IFloodRepository* flood_repository, IFloodMapper* flood_mapper);
   void loop();
 };
 

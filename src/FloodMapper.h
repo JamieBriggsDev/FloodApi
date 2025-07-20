@@ -5,15 +5,13 @@
 #ifndef FLOODMAPPER_H
 #define FLOODMAPPER_H
 
-#include <ArduinoJson.h>
-#include <vector>
-#include "db/FloodSchema.h"
+#include "IFloodMapper.h"
 
-class FloodMapper
+class FloodMapper : public IFloodMapper
 {
   public:
-  static JsonDocument getFloodData(const std::vector<RiverReading>& riverReadings);
-  static JsonDocument getRainfallReadings(const std::vector<RainfallReading>& rainfallReadings);
+  JsonDocument getFloodData(const std::vector<RiverReading>& riverReadings) const override;
+  JsonDocument getRainfallReadings(const std::vector<RainfallReading>& rainfallReadings) const override;
 };
 
 

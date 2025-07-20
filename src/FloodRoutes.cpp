@@ -19,6 +19,7 @@
 // Add static member definition
 IDisplay* FloodRoutes::s_display = nullptr;
 IFloodRepository* FloodRoutes::s_floodRepository = nullptr;
+IFloodMapper* FloodRoutes::s_floodMapper = nullptr;
 
 static std::string getMethodName(Request::MethodType method)
 {
@@ -47,7 +48,12 @@ void FloodRoutes::river(Request& request, Response& response)
 
   std::vector<RiverReading> river_readings = s_floodRepository->getRiverReadings("2025-12-25");
 
+  // Convert to JSON
+  const JsonDocument doc = s_floodMapper->getFloodData(river_readings);
+  std::string json;
+  serializeJsonPretty(doc, json);
 
+  response.print(json.c_str());
 
   auto end = std::chrono::system_clock::now();
   auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
@@ -68,10 +74,12 @@ void FloodRoutes::logRequest(Request& req, Response& res)
   s_display->displayText(messageRowOne.str().c_str(), messageRowTwo.str().c_str(), FLASH);
 }
 
-FloodRoutes::FloodRoutes(IDisplay* display, IFloodRepository* flood_repository) : m_server(PORT)
+FloodRoutes::FloodRoutes(IDisplay* display, IFloodRepository* flood_repository, IFloodMapper* flood_mapper) :
+    m_server(PORT)
 {
   s_display = display;
   s_floodRepository = flood_repository;
+  s_floodMapper = flood_mapper;
 
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
   while (WiFi.status() != WL_CONNECTED)
