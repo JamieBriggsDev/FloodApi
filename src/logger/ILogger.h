@@ -4,9 +4,15 @@
 
 #ifndef ILOGGER_H
 #define ILOGGER_H
+
+#if defined(ARDUINO)
 #include <WString.h>
+#endif
+
 #include <cstdarg>
-#include <stdio.h>
+#include <cstdio>
+#include <cstring>
+#include <string>
 
 enum class LogLevel
 {
@@ -68,65 +74,32 @@ class ILogger
     error(buffer);
   }
 
+#if defined(ARDUINO)
   // String overloads
-  void debug(const String& msg)
-  {
-    this->debug(msg.c_str());
-  }
+  void debug(const String& msg) { this->debug(msg.c_str()); }
 
-  void info(const String& msg)
-  {
-    this->info(msg.c_str());
-  }
+  void info(const String& msg) { this->info(msg.c_str()); }
 
-  void warning(const String& msg)
-  {
-    this->warning(msg.c_str());
-  }
+  void warning(const String& msg) { this->warning(msg.c_str()); }
 
-  void error(const String& msg)
-  {
-    this->error(msg.c_str());
-  }
+  void error(const String& msg) { this->error(msg.c_str()); }
 
   // std::string overloads
-  void debug(const std::string msg)
-  {
-    this->debug(msg.c_str());
-  }
+  void debug(const std::string msg) { this->debug(msg.c_str()); }
 
-  void info(const std::string msg)
-  {
-    this->info(msg.c_str());
-  }
+  void info(const std::string msg) { this->info(msg.c_str()); }
 
-  void warning(const std::string msg)
-  {
-    this->warning(msg.c_str());
-  }
+  void warning(const std::string msg) { this->warning(msg.c_str()); }
 
-  void error(const std::string msg)
-  {
-    this->error(msg.c_str());
-  }
+  void error(const std::string msg) { this->error(msg.c_str()); }
+#endif
 
   // Long overloads
-  void debug(const long msg)
-  {
-    debug(String(msg));
-  }
+  void debug(const long msg) { debug(std::to_string(msg).c_str()); }
 
-  void info(const long msg)
-  {
-    info(String(msg));
-  }
+  void info(const long msg) { info(std::to_string(msg).c_str()); }
 
-  void error(const int msg)
-  {
-    this->error(String(msg));
-  }
-
-
+  void error(const int msg) { this->error(std::to_string(msg).c_str()); }
 };
 
 #endif // ILOGGER_H

@@ -11,9 +11,6 @@
 #include <iomanip>
 #include <sstream>
 
-// Replace the individual ArduinoJson includes with the main header
-#include <ArduinoJson.h>  // This single include should replace all individual ArduinoJson includes
-
 #include "def_wifi_settings.h"
 #include "display/IDisplay.h"
 #include "logger/def_logger_factory.h"
@@ -49,23 +46,12 @@ void FloodRoutes::river(Request& request, Response& response)
   response.set("Content-Type", "application/json");
 
   std::vector<RiverReading> river_readings = s_floodRepository->getRiverReadings("2025-12-25");
-  // Create JSON document
-  JsonDocument doc;
-  JsonArray readings = doc.createNestedArray("readings");
 
-  // Add each river reading to the JSON array
-  for (const auto& reading : river_readings) {
-    JsonObject readingObj = readings.add<JsonObject>();
-    readingObj["level"] = reading.level;
-    readingObj["timestamp"] = reading.timestamp.c_str(); // Convert std::string to const char*
-  }
+
 
   auto end = std::chrono::system_clock::now();
   auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
   response.set("Request-Time", std::to_string(duration.count()).c_str());
-
-  // Serialize JSON to response
-  serializeJson(doc, response);
 }
 
 void FloodRoutes::riverStation(Request& request, Response& response)
