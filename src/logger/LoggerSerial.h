@@ -27,22 +27,22 @@ public:
   LoggerSerial& operator=(const LoggerSerial&) = delete;
 
   void debug(const char* message) override {
-    log(LogLevel::DEBUG, message);
+    log(Flood::LogLevel::F_DEBUG, message);
   }
 
   void info(const char* message) override {
-    log(LogLevel::INFO, message);
+    log(Flood::LogLevel::F_INFO, message);
   }
 
   void warning(const char* message) override {
-    log(LogLevel::WARNING, message);
+    log(Flood::LogLevel::F_WARNING, message);
   }
 
   void error(const char* message) override {
-    log(LogLevel::ERROR, message);
+    log(Flood::LogLevel::F_ERROR, message);
   }
 
-  void setLogLevel(LogLevel level) override
+  void setLogLevel(Flood::LogLevel level) override
   {
     std::lock_guard<std::mutex> lock(mutex_);
     minimumLogLevel_ = level;
@@ -51,7 +51,7 @@ public:
   private:
   LoggerSerial() = default;
 
-  void log(LogLevel level, const char* message)
+  void log(Flood::LogLevel level, const char* message)
   {
     if (level < minimumLogLevel_)
       return;
@@ -70,16 +70,16 @@ public:
     const char* levelStr;
     switch (level)
     {
-    case LogLevel::DEBUG:
+    case Flood::LogLevel::F_DEBUG:
       levelStr = "DEBUG";
       break;
-    case LogLevel::INFO:
+    case Flood::LogLevel::F_INFO:
       levelStr = "INFO";
       break;
-    case LogLevel::WARNING:
+    case Flood::LogLevel::F_WARNING:
       levelStr = "WARNING";
       break;
-    case LogLevel::ERROR:
+    case Flood::LogLevel::F_ERROR:
       levelStr = "ERROR";
       break;
     default:
@@ -92,7 +92,7 @@ public:
     Serial.println(message);
   }
 
-  LogLevel minimumLogLevel_ = LogLevel::DEBUG;
+  Flood::LogLevel minimumLogLevel_ = Flood::LogLevel::F_DEBUG;
   std::mutex mutex_;
 };
 

@@ -14,13 +14,17 @@
 #include <cstring>
 #include <string>
 
-enum class LogLevel
+namespace Flood
 {
-  DEBUG,
-  INFO,
-  WARNING,
-  ERROR
-};
+
+  enum class LogLevel
+  {
+    F_DEBUG,
+    F_INFO,
+    F_WARNING,
+    F_ERROR
+  };
+}
 
 class ILogger
 {
@@ -31,7 +35,7 @@ class ILogger
   virtual void info(const char*) = 0;
   virtual void warning(const char*) = 0;
   virtual void error(const char*) = 0;
-  virtual void setLogLevel(LogLevel level) = 0;
+  virtual void setLogLevel(Flood::LogLevel level) = 0;
 
   // Format string methods
   void debug_f(const char* format, ...)

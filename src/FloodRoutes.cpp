@@ -81,12 +81,6 @@ FloodRoutes::FloodRoutes(IDisplay* display, IFloodRepository* flood_repository, 
   s_floodRepository = flood_repository;
   s_floodMapper = flood_mapper;
 
-  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-  while (WiFi.status() != WL_CONNECTED)
-  {
-    delay(500);
-    s_display->displayText("Connecting..", FLASH);
-  }
   // Display IP and PORT number
   std::ostringstream portMessage;
   portMessage << "Port: " << std::to_string(PORT);
@@ -101,7 +95,7 @@ FloodRoutes::FloodRoutes(IDisplay* display, IFloodRepository* flood_repository, 
   m_app.get("/river/{station}", &riverStation);
 
   // Begin server
-  LOG.info("Starting server");
+  LOG.debug("Starting server in FloodRoutes");
   m_server.begin();
 }
 

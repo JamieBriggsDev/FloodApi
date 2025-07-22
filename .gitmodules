@@ -1,3 +1,0 @@
-[submodule "lib/esp32_arduino_sqlite3_lib"]
-	path = lib/esp32_arduino_sqlite3_lib
-	url = https://github.com/siara-cc/esp32_arduino_sqlite3_lib.git

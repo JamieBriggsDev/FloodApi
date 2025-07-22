@@ -2,8 +2,11 @@
 // Created by Jamie Briggs on 17/07/2025.
 //
 
+
 #ifndef SCHEMA_H
 #define SCHEMA_H
+
+#include <string>
 
 struct RiverReading
 {
