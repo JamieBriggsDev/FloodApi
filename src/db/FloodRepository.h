@@ -17,7 +17,7 @@ struct RainfallReading;
 class FloodRepository : public IFloodRepository
 {
   public:
-  void init();
+  void init() override;
   std::vector<RiverReading> getRiverReadings(const char* startDate, uint16_t page,
                                              uint8_t pageSize) const override;
   std::vector<RainfallReading> getStationRainfallReadings(const char* stationName, const char* startDate,

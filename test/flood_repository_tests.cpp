@@ -7,10 +7,14 @@
 
 #if defined(ARDUINO)
 #include <Arduino.h>
+#include <WiFi.h>
 
 #include "db/FloodRepository.cpp"
 #include "db/FloodRepository.h"
 #include "db/FloodSchema.h"
+#include "def_wifi_settings.cpp"
+#include "def_wifi_settings.h"
+#include "MySQL_Packet.h"
 
 class FloorRepositoryTests : public ::testing::Test
 {
@@ -19,6 +23,15 @@ protected:
 
   void SetUp() override
   {
+    LOG.debug_f("Connecting to WiFi: %s", WIFI_SSID);
+    WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+    while (WiFiClass::status() != WL_CONNECTED)
+    {
+      delay(500);
+      Serial.print("Connecting..");
+    }
+    LOG.debug("Connected to WiFi!");
+
     repository_.init();
   }
 };

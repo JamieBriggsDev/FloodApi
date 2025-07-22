@@ -41,6 +41,7 @@ void setup()
 
   LOG.debug("Initializing Flood repository...");
   flood_repository = new FloodRepository();
+  flood_repository->init();
   LOG.debug("Initializing Flood mapper...");
   flood_mapper = new FloodMapper();
 

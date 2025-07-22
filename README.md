@@ -55,3 +55,15 @@ brew install espressif
 ```
 
 Drivers for ESP32 and serial found [here](https://docs.espressif.com/projects/esp-idf/en/stable/esp32/get-started/linux-macos-setup.html).
+
+Need to modify `MySQL_Packet.h` to work with WiFi found [here](https://github.com/ChuckBell/MySQL_Connector_Arduino/wiki/Hardware-Guide#modifying-the-connector):
+```c++
+#ifdef ARDUINO_ARCH_ESP32 
+    #include <Arduino.h> 
+#elif ARDUINO_ARCH_ESP8266
+    #include <ESP8266WiFi.h>
+#else
+    #include <WiFi.h>
+//    #include <Ethernet.h>
+#endif
+```
