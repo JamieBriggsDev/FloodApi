@@ -67,3 +67,12 @@ Need to modify `MySQL_Packet.h` to work with WiFi found [here](https://github.co
 //    #include <Ethernet.h>
 #endif
 ```
+
+
+May also need this:
+```sql
+-- First ensure the user exists
+CREATE USER IF NOT EXISTS 'floodUser'@'%';
+ALTER USER 'floodUser'@'%' IDENTIFIED WITH mysql_native_password BY 'floodPassword';
+FLUSH PRIVILEGES;
+```

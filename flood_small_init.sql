@@ -1,7 +1,4 @@
--- First ensure the user exists
-CREATE USER IF NOT EXISTS 'floodUser'@'%';
-ALTER USER 'floodUser'@'%' IDENTIFIED WITH mysql_native_password BY 'floodPassword';
-FLUSH PRIVILEGES;
+
 
 
 -- Make sure the privileges are reloaded

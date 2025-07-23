@@ -9,9 +9,8 @@ services:
     environment:
       SWAGGER_JSON: /spec/openapi.yaml
   flood-db:
-    image: mysql:8.4
+    image: mysql:5-oracle
     container_name: flood-db
-    command: mysqld --mysql_native_password=ON
     ports:
       - "3306:3306"
     environment:
