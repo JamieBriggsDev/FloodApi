@@ -1,3 +1,12 @@
+-- Create user if not exists
+CREATE USER IF NOT EXISTS 'floodUser'@'%' IDENTIFIED WITH mysql_native_password BY 'floodPassword';
+
+-- Grant necessary permissions
+GRANT SELECT, INSERT, UPDATE, DELETE ON floodDatabase.* TO 'floodUser'@'%';
+
+-- Make sure the privileges are reloaded
+FLUSH PRIVILEGES;
+
 CREATE TABLE IF NOT EXISTS Rainfalls (
     StationId VARCHAR(255),
     TimeStamp VARCHAR(255),

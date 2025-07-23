@@ -9,8 +9,9 @@ services:
     environment:
       SWAGGER_JSON: /spec/openapi.yaml
   flood-db:
-    image: mysql:latest
+    image: mysql:8.4
     container_name: flood-db
+    command: mysqld --mysql-native-password=ON
     ports:
       - "3306:3306"
     environment:
@@ -20,5 +21,5 @@ services:
       - MYSQL_USER=floodUser
       - MYSQL_PASSWORD=floodPassword
     volumes:
-      - ./flood_init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./flood_small_init.sql:/docker-entrypoint-initdb.d/init.sql
 

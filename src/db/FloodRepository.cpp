@@ -8,31 +8,64 @@
 #include <SD_MMC.h>
 #include <SPI.h>
 #include <WiFiClient.h>
+#include <cstdlib>
 #include <mutex>
 #include <sstream>
 #include <string>
-#include <cstdlib>
 
+#include <ESP32Ping.h>
 #include "FloodSchema.h"
 #include "MySQL_Connection.h"
 #include "MySQL_Cursor.h"
 #include "def_pin_outs.h"
-#include "def_wifi_settings.h"
 #include "logger/def_logger_factory.h"
 
 #define READ_ALL -1
 #define PAGE_OFFSET 1
 
-WiFiClient client;            // Use this for WiFi instead of EthernetClient
-MySQL_Connection conn((Client *)&client);
+WiFiClient client; // Use this for WiFi instead of EthernetClient
+MySQL_Connection conn((Client*)&client);
+
+
+// Add this function to your code
+bool pingHost(const IPAddress& ip)
+{
+  LOG.info_f("Attempting to ping database host at %s", ip.toString().c_str());
+
+  const bool success = Ping.ping(ip, 5);
+
+  if (!success)
+  {
+    LOG.error_f("Could not ping %s", ip.toString());
+    return false;
+  }
+
+  Serial.println("Ping successful!");
+
+  return success;
+}
 
 
 void FloodRepository::init()
 {
   LOG.info("Initializing FloodRepository");
 
-  LOG.info_f("Connecting to database: %s@%s:%d",DB_NAME, DB_HOSTNAME.toString(), DB_PORT);
-  if (conn.connect(DB_HOSTNAME, DB_PORT, DB_USERNAME, DB_PASSWORD, DB_NAME))
+  const IPAddress DB_HOSTNAME(192, 168, 1, 160);
+  int DB_PORT = 3306;
+  char DB_NAME[] = "floodDatabase";
+  char DB_USERNAME[] = "root";
+  char DB_PASSWORD[] = "secret";
+
+  // Try to ping the database host first
+  if (!pingHost(DB_HOSTNAME))
+  {
+    LOG.error("Could not ping database host - check network connectivity");
+    throw new std::runtime_error("Could not ping database host - check network connectivity");
+  }
+
+
+  LOG.info_f("Connecting to database: %s@%s:%d", DB_NAME, DB_HOSTNAME.toString(), DB_PORT);
+  while (!conn.connect(DB_HOSTNAME, DB_PORT, DB_USERNAME, DB_PASSWORD, DB_NAME))
   {
     delay(1000);
     LOG.debug("Still trying to connect");
@@ -43,12 +76,13 @@ void FloodRepository::init()
 }
 
 
-std::vector<RiverReading> FloodRepository::getRiverReadings(const char* startDate, uint16_t page, uint8_t pageSize) const
+std::vector<RiverReading> FloodRepository::getRiverReadings(const char* startDate, uint16_t page,
+                                                            uint8_t pageSize) const
 {
   std::vector<RiverReading> result;
 
   // Step 1: Create a cursor
-  MySQL_Cursor *cur_mem = new MySQL_Cursor(&conn);
+  MySQL_Cursor* cur_mem = new MySQL_Cursor(&conn);
 
   // Step 2: Execute the query
   std::stringstream sql;
@@ -60,26 +94,30 @@ std::vector<RiverReading> FloodRepository::getRiverReadings(const char* startDat
   cur_mem->execute(query);
 
   // Step 3: Fetch the columns
-  column_names *columns = cur_mem->get_columns();
+  column_names* columns = cur_mem->get_columns();
 
-  row_values *row = nullptr;
+  row_values* row = nullptr;
   long head_count = 0;
 
   // Read the rows
-  do {
+  do
+  {
     row = cur_mem->get_next_row();
-    if (row != NULL) {
+    if (row != NULL)
+    {
       char* endptr;
       double level = strtod(row->values[1], &endptr);
-      if (endptr == row->values[1] || *endptr != '\0') {
+      if (endptr == row->values[1] || *endptr != '\0')
+      {
         // Conversion failed
         LOG.error_f("Failed to convert string '%s' to double", row->values[1]);
         continue;
       }
 
-      RiverReading reading{ .timestamp = row->values[0], .level = level };
+      RiverReading reading{.timestamp = row->values[0], .level = level};
     }
-  } while (row != NULL);
+  }
+  while (row != NULL);
   // Deleting the cursor also frees up memory used
   delete cur_mem;
 
