@@ -1,8 +1,8 @@
--- Create user if not exists
-CREATE USER IF NOT EXISTS 'floodUser'@'%' IDENTIFIED WITH mysql_native_password BY 'floodPassword';
+-- First ensure the user exists
+CREATE USER IF NOT EXISTS 'floodUser'@'%';
+ALTER USER 'floodUser'@'%' IDENTIFIED WITH mysql_native_password BY 'floodPassword';
+FLUSH PRIVILEGES;
 
--- Grant necessary permissions
-GRANT SELECT, INSERT, UPDATE, DELETE ON floodDatabase.* TO 'floodUser'@'%';
 
 -- Make sure the privileges are reloaded
 FLUSH PRIVILEGES;

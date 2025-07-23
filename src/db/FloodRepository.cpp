@@ -53,8 +53,8 @@ void FloodRepository::init()
   const IPAddress DB_HOSTNAME(192, 168, 1, 160);
   int DB_PORT = 3306;
   char DB_NAME[] = "floodDatabase";
-  char DB_USERNAME[] = "root";
-  char DB_PASSWORD[] = "secret";
+  char DB_USERNAME[] = "floodUser";
+  char DB_PASSWORD[] = "floodPassword";
 
   // Try to ping the database host first
   if (!pingHost(DB_HOSTNAME))
@@ -63,13 +63,36 @@ void FloodRepository::init()
     throw new std::runtime_error("Could not ping database host - check network connectivity");
   }
 
+  // Try basic TCP connection first
+  LOG.info("Testing TCP connection...");
+  if (!client.connect(DB_HOSTNAME, DB_PORT)) {
+    LOG.error("TCP connection failed!");
+    throw std::runtime_error("TCP connection failed");
+  }
+  LOG.info("TCP connection successful!");
+  client.stop(); // Close the test connection
+
+
 
   LOG.info_f("Connecting to database: %s@%s:%d", DB_NAME, DB_HOSTNAME.toString(), DB_PORT);
+  int retries = 0;
+  const int MAX_RETRIES = 5;
+  LOG.debug_f("Heap size: %d", ESP.getHeapSize());
+  LOG.debug_f("Free heap before connection: %d", ESP.getFreeHeap());
   while (!conn.connect(DB_HOSTNAME, DB_PORT, DB_USERNAME, DB_PASSWORD, DB_NAME))
   {
-    delay(1000);
+    LOG.error_f("Connection attempt %d failed", retries + 1);
+
+    if (++retries >= MAX_RETRIES) {
+      LOG.error("Max connection retries reached");
+      throw std::runtime_error("Could not connect to database after maximum retries");
+    }
+    delay(2000); // Increased delay
     LOG.debug("Still trying to connect");
   }
+  // Try connection here
+  LOG.debug_f("Free heap after connection: %d", ESP.getFreeHeap());
+
   LOG.info_f("Connected to database!");
 
   LOG.info("Completed initialization for FloodRepository");
