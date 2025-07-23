@@ -11,7 +11,7 @@ services:
   flood-db:
     image: mysql:8.4
     container_name: flood-db
-    command: mysqld --mysql-native-password=ON
+    command: mysqld --mysql_native_password=ON
     ports:
       - "3306:3306"
     environment:
