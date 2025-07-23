@@ -20,5 +20,5 @@ services:
       - MYSQL_USER=floodUser
       - MYSQL_PASSWORD=floodPassword
     volumes:
-      - ./flood_small_init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./flood_small.sql:/docker-entrypoint-initdb.d/init.sql
 
