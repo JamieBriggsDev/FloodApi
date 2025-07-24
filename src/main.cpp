@@ -3,6 +3,7 @@
 //
 
 #include <Arduino.h>
+#include <sstream>
 
 #include "../src/display/LCDDisplay.h"
 #include "../src/display/LiquidCrystalAdapter.h"
@@ -14,13 +15,15 @@
 #include "logger/def_logger_factory.h"
 
 
+
+
 FloodRoutes* flood_routes;
 LiquidCrystalAdapter* lcd;
 LCDDisplay* display;
 IFloodRepository* flood_repository;
 IFloodMapper* flood_mapper;
 
-#define REPO_ENABLED 1
+#define REPO_ENABLED 0
 #define ROUTES_ENABLED 1
 
 void setup()
@@ -28,7 +31,7 @@ void setup()
   Serial.begin(115200);
   LOG.info("Setting up Flood API...");
 
-  LOG.info("Checking defgramentation...");
+  LOG.info("Checking defragmentation...");
   // In your setup(), before initializing your components
   if (heap_caps_check_integrity_all(true))
   {
@@ -45,9 +48,8 @@ void setup()
 
 #if REPO_ENABLED
 
-  LOG.debug("Initializing Flood repository...");
+  LOG.debug("Creating Flood repository...");
   flood_repository = new FloodRepository("/small_flood_downgraded.db");
-  flood_repository->init();
 
 #endif
 
@@ -55,7 +57,16 @@ void setup()
   flood_mapper = new FloodMapper();
 
 #if ROUTES_ENABLED
+  // Why does example setup wifi like this?
+  /**
+  pinMode(led, OUTPUT);
+  digitalWrite(led, 0);
+  Serial.begin(115200);
+  WiFi.begin(ssid, password);
+  Serial.println("");
+   */
   LOG.debug_f("Connecting to WiFi: %s", WIFI_SSID);
+  WiFi.mode(WIFI_STA);
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
   while (WiFiClass::status() != WL_CONNECTED)
   {
@@ -63,8 +74,22 @@ void setup()
     display->displayText("Connecting..", FLASH);
   }
 
+  // Display IP and PORT number
+  std::ostringstream portMessage;
+  portMessage << "Port: " << std::to_string(PORT);
+  display->displayText(WiFi.localIP().toString().c_str(), portMessage.str().c_str(), STICKY);
+
   LOG.debug("Initializing Flood routes...");
   flood_routes = new FloodRoutes(display, flood_repository, flood_mapper);
+#endif
+
+
+#if REPO_ENABLED
+
+  LOG.debug("Initializing Flood repository...");
+  // This is initialized after FloodRoutes has initialized
+  flood_repository->init();
+
 #endif
 
   LOG.info("Completed setup!");

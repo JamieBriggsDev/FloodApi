@@ -5,8 +5,7 @@
 #ifndef FLOODROUTES_H
 #define FLOODROUTES_H
 
-#include <WiFi.h>
-#include <aWOT.h>
+#include <WebServer.h>
 
 #include "IFloodMapper.h"
 #include "db/IFloodRepository.h"
@@ -15,16 +14,14 @@
 class FloodRoutes
 {
   private:
-  static constexpr uint8_t PORT = 80;
 
-  static void logRequest(Request& request, Response& response);
-  static void river(Request& request, Response& response);
-  static void riverStation(Request& request, Response& response);
-  WiFiServer m_server;
-  Application m_app;
-  static IFloodRepository* s_floodRepository;
-  static IDisplay* s_display;
-  static IFloodMapper* s_floodMapper;
+
+  void river();
+  void riverStation();
+  WebServer m_server;
+  IFloodRepository* s_floodRepository;
+  IDisplay* s_display;
+  IFloodMapper* s_floodMapper;
   char m_expectHeader[20]{};
 
   public:
