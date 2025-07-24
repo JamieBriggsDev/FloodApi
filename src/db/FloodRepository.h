@@ -5,8 +5,7 @@
 #ifndef FLOODREPOSITORY_H
 #define FLOODREPOSITORY_H
 
-#include <cstdint>
-#include <mutex>
+
 #include <vector>
 
 
@@ -20,10 +19,7 @@ struct RainfallReading;
 class FloodRepository : public IFloodRepository
 {
   sqlite3* m_floodDb;
-  mutable std::mutex m_mutex;  // mutable allows usage in const methods
-
   const char* m_dbPath;
-
 
   public:
   explicit FloodRepository(const char* dbPath) : m_floodDb(nullptr), m_dbPath(dbPath) {};

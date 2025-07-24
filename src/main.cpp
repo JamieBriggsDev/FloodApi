@@ -84,7 +84,7 @@ void setup()
 #endif
 
 
-#if REPO_ENABLED
+#if REPO_ENABLED && false
 
   LOG.debug("Initializing Flood repository...");
   // This is initialized after FloodRoutes has initialized
@@ -105,7 +105,7 @@ void loop()
 #endif
 
 
-#if REPO_ENABLED
+#if REPO_ENABLED && false
   const auto riverReadings = flood_repository->getRiverReadings("2022-12-12", 1, 10);
   // This will log the JSON for me
   flood_mapper->getFloodData(riverReadings);

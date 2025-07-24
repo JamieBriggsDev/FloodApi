@@ -5,9 +5,7 @@
 #include "../../src/db/FloodRepository.h"
 
 #include <SD.h>
-#include <SD_MMC.h>
 #include <SPI.h>
-#include <mutex>
 #include <sstream>
 #include <string>
 
@@ -70,6 +68,7 @@ void FloodRepository::init()
 {
   LOG.info("Initializing FloodRepository");
 
+#if false
   LOG.debug("Beginning SPI");
   SPI.begin();
   LOG.debug("Beginning SD ");
@@ -78,7 +77,18 @@ void FloodRepository::init()
     LOG.error("Card Mount Failed");
     throw std::runtime_error("Card Mount Failed");
   }
+#endif
 
+#if false
+  uint8_t cardType = SD.cardType();
+  if (cardType == CARD_NONE)
+  {
+    LOG.error("No SD card attached");
+    throw std::runtime_error("No SD card attached");
+  }
+#endif
+
+#if false
   // Check the database file exists
   if (SD.exists(this->m_dbPath))
   {
@@ -91,14 +101,10 @@ void FloodRepository::init()
   {
     LOG.error("Database file not found on SD card");
   }
+#endif
 
-  uint8_t cardType = SD.cardType();
-  if (cardType == CARD_NONE)
-  {
-    LOG.error("No SD card attached");
-    throw std::runtime_error("No SD card attached");
-  }
 
+#if false
   LOG.info("Initializing SQLite3...");
   int initialize = sqlite3_initialize();
   if (initialize != SQLITE_OK)
@@ -106,17 +112,17 @@ void FloodRepository::init()
     LOG.error_f("Failed to initialize SQLite3: %s", initialize);
     throw std::runtime_error("Failed to initialize SQLite3");
   }
+#endif
 
+#if false
   LOG.debug("Opening DB...");
   if (openDb("/sd/flood_downgraded.db", &m_floodDb) != SQLITE_OK)
   {
     LOG.error("Failed to open database");
     throw new std::runtime_error("Failed to open database");
   }
-  // Try connection here
-  LOG.debug_f("Free heap after connection: %d", ESP.getFreeHeap());
-
   LOG.info_f("Connected to database!");
+#endif
 
   LOG.info("Completed initialization for FloodRepository");
 }
@@ -124,7 +130,6 @@ void FloodRepository::init()
 
 std::vector<RiverReading> FloodRepository::getRiverReadings(const char* startDate, uint16_t page, uint8_t pageSize) const
 {
-  std::lock_guard<std::mutex> lock(m_mutex);
   std::vector<RiverReading> result;
 
   int rc = INT_MAX;
