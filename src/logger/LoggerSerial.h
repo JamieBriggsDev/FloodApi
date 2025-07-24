@@ -5,8 +5,6 @@
 #ifndef LOGGER_H
 #define LOGGER_H
 
-#include <mutex>
-
 #include "ILogger.h"
 
 #if defined(ARDUINO) || defined(ESP32)
@@ -44,7 +42,6 @@ public:
 
   void setLogLevel(Flood::LogLevel level) override
   {
-    std::lock_guard<std::mutex> lock(mutex_);
     minimumLogLevel_ = level;
   }
 
@@ -65,7 +62,6 @@ public:
       [DEBUG] First message
       [INFO] Second message
      */
-    std::lock_guard<std::mutex> lock(mutex_);
 
     const char* levelStr;
     switch (level)
@@ -93,7 +89,6 @@ public:
   }
 
   Flood::LogLevel minimumLogLevel_ = Flood::LogLevel::F_DEBUG;
-  std::mutex mutex_;
 };
 
 
