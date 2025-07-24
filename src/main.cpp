@@ -20,13 +20,21 @@ LCDDisplay* display;
 IFloodRepository* flood_repository;
 IFloodMapper* flood_mapper;
 
-#define REPO_ENABLED 0
+#define REPO_ENABLED 1
 #define ROUTES_ENABLED 1
 
 void setup()
 {
   Serial.begin(115200);
   LOG.info("Setting up Flood API...");
+
+  LOG.info("Checking defgramentation...");
+  // In your setup(), before initializing your components
+  if (heap_caps_check_integrity_all(true))
+  {
+    LOG.debug("Heap integrity check passed");
+  }
+
 
   LOG.debug("Initializing LCD...");
   lcd = new LiquidCrystalAdapter(ESP_RS_PIN, ESP_ENABLE_PIN, ESP_D0_PIN, ESP_D1_PIN, ESP_D2_PIN, ESP_D3_PIN);
@@ -65,8 +73,7 @@ void setup()
 void loop()
 {
   // Monitor heap memory usage
-  LOG.debug_f("Free Heap: %d bytes", ESP.getFreeHeap());
-  LOG.debug_f("Free Memory:", String(ESP.getFreeHeap()).c_str());
+  LOG.debug_f("Free Heap: %d bytes, Largest Free Block: %d bytes", ESP.getFreeHeap(), ESP.getMaxAllocHeap());
 
 #if ROUTES_ENABLED
   flood_routes->loop();
@@ -82,11 +89,11 @@ void loop()
   delay(5000); // Wait 5 seconds
 }
 
-void cleanup() {
+void cleanup()
+{
   delete lcd;
   delete display;
   delete flood_repository;
   delete flood_mapper;
   delete flood_routes;
 }
-
