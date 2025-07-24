@@ -45,7 +45,8 @@ void FloodRoutes::river(Request& request, Response& response)
   auto start = std::chrono::system_clock::now();
   response.set("Content-Type", "application/json");
 
-  std::vector<RiverReading> river_readings = s_floodRepository->getRiverReadings("2025-12-25");
+  // TODO Re-enable this
+  std::vector<RiverReading> river_readings;// = s_floodRepository->getRiverReadings("2025-12-25");
 
   // Convert to JSON
   const JsonDocument doc = s_floodMapper->getFloodData(river_readings);
@@ -56,7 +57,7 @@ void FloodRoutes::river(Request& request, Response& response)
 
   auto end = std::chrono::system_clock::now();
   auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-  response.set("Request-Time", std::to_string(duration.count()).c_str());
+  LOG.info_f("/river completed in %d milliseconds", duration.count());
 }
 
 void FloodRoutes::riverStation(Request& request, Response& response)
