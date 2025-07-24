@@ -23,7 +23,7 @@ LCDDisplay* display;
 IFloodRepository* flood_repository;
 IFloodMapper* flood_mapper;
 
-#define REPO_ENABLED 0
+#define REPO_ENABLED 1
 #define ROUTES_ENABLED 1
 
 void setup()
