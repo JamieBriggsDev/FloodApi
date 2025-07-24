@@ -24,7 +24,7 @@ IFloodRepository* flood_repository;
 IFloodMapper* flood_mapper;
 
 #define REPO_ENABLED 1
-#define ROUTES_ENABLED 0
+#define ROUTES_ENABLED 1
 
 void setup()
 {
@@ -49,7 +49,7 @@ void setup()
 #if REPO_ENABLED
 
   LOG.debug("Creating Flood repository...");
-  flood_repository = new FloodRepository("/small_flood_downgraded.db");
+  flood_repository = new FloodRepository("/flood_downgraded.db");
 
 #endif
 

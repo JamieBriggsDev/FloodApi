@@ -24,8 +24,7 @@ void FloodRoutes::river()
 
   auto start = std::chrono::system_clock::now();
 
-  // TODO Re-enable this
-  std::vector<RiverReading> river_readings;// = s_floodRepository->getRiverReadings("2025-12-25");
+  std::vector<RiverReading> river_readings = s_floodRepository->getRiverReadings("2022-12-25");
 
   // Convert to JSON
   const JsonDocument doc = s_floodMapper->getFloodData(river_readings);

@@ -28,7 +28,7 @@ class FloodRepository : public IFloodRepository
     sqlite3_close(m_floodDb);
     m_floodDb = nullptr;
   };
-  void init();
+  void init() override;
   std::vector<RiverReading> getRiverReadings(const char* startDate, uint16_t page,
                                              uint8_t pageSize) const override;
   std::vector<RainfallReading> getStationRainfallReadings(const char* stationName, const char* startDate,
