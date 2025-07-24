@@ -9,25 +9,27 @@
 #include <Arduino.h>
 #include <WiFi.h>
 
-#include "db/FloodSDRepository.h"
-#include "db/FloodSDRepository.cpp"
+#include "db/FloodRepository.h"
+#include "db/FloodRepository.h"
+#include "db/FloodRepository.cpp"
 #include "db/FloodSchema.h"
 
 class FloorRepositoryTests : public ::testing::Test
 {
 protected:
-  FloodSDRepository repository_;
+  IFloodRepository* repository_ = nullptr;
 
   void SetUp() override
   {
-    repository_.init();
+    repository_ = new FloodRepository();
+    repository_->init();
   }
 };
 
 
 TEST_F(FloorRepositoryTests, GetSingleRiverLevel)
 {
-  const auto riverReadings = repository_.getRiverReadings("2022-12-12", 1, 1);
+  const auto riverReadings = repository_->getRiverReadings("2022-12-12", 1, 1);
 
   ASSERT_EQ(riverReadings.size(), 1);
   const RiverReading expected{.timestamp = "2022-12-12 00:00:00", .level = 0.375};
@@ -38,7 +40,7 @@ TEST_F(FloorRepositoryTests, GetSingleRiverLevel)
 
 TEST_F(FloorRepositoryTests, GetThreeRiverLevels)
 {
-  const auto riverReadings = repository_.getRiverReadings("2020-01-25", 1, 3);
+  const auto riverReadings = repository_->getRiverReadings("2020-01-25", 1, 3);
 
   ASSERT_EQ(riverReadings.size(), 3);
 }

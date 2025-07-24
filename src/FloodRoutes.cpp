@@ -15,13 +15,12 @@
 #include "display/IDisplay.h"
 #include "logger/def_logger_factory.h"
 
-
 // Add static member definition
 IDisplay* FloodRoutes::s_display = nullptr;
 IFloodRepository* FloodRoutes::s_floodRepository = nullptr;
 IFloodMapper* FloodRoutes::s_floodMapper = nullptr;
 
-static std::string getMethodName(Request::MethodType method)
+static std::string getHTTPMethodName(Request::MethodType method)
 {
   switch (method)
   {
@@ -70,7 +69,7 @@ void FloodRoutes::logRequest(Request& req, Response& res)
   std::ostringstream messageRowOne;
   messageRowOne << "Request: ";
   std::ostringstream messageRowTwo;
-  messageRowTwo << getMethodName(req.method()) << ": " << req.path();
+  messageRowTwo << getHTTPMethodName(req.method()) << ": " << req.path();
   s_display->displayText(messageRowOne.str().c_str(), messageRowTwo.str().c_str(), FLASH);
 }
 

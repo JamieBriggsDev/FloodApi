@@ -25,7 +25,7 @@ void setup()
   Serial.begin(115200);
   LOG.info("Setting up Flood API...");
 
-  LOG.debug("Initializing LCD...");
+  /*LOG.debug("Initializing LCD...");
   lcd = new LiquidCrystalAdapter(ESP_RS_PIN, ESP_ENABLE_PIN, ESP_D0_PIN, ESP_D1_PIN, ESP_D2_PIN, ESP_D3_PIN);
   LOG.debug("Initializing Printer Service...");
   display = new LCDDisplay(*lcd);
@@ -37,17 +37,24 @@ void setup()
   {
     delay(500);
     display->displayText("Connecting..", FLASH);
-  }
+  }*/
 
   LOG.debug("Initializing Flood repository...");
-  flood_repository = new FloodRepository();
+  flood_repository = new FloodRepository("/small_flood_downgraded.db");
   flood_repository->init();
   LOG.debug("Initializing Flood mapper...");
   flood_mapper = new FloodMapper();
 
-  LOG.debug("Initializing Flood routes...");
-  flood_routes = new FloodRoutes(display, flood_repository, flood_mapper);
+  //LOG.debug("Initializing Flood routes...");
+  //flood_routes = new FloodRoutes(display, flood_repository, flood_mapper);
   LOG.info("Completed setup!");
 }
 
-void loop() { flood_routes->loop(); }
+void loop()
+{
+  LOG.debug("App running!");
+  const auto riverReadings = flood_repository->getRiverReadings("2022-12-12", 1, 10);
+  // This will log the JSON for me
+  flood_mapper->getFloodData(riverReadings);
+  delay(10000);
+}

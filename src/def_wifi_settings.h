@@ -10,10 +10,4 @@
 extern const char* WIFI_SSID;
 extern const char* WIFI_PASSWORD;
 
-extern const IPAddress DB_HOSTNAME;
-extern int DB_PORT;
-extern char* DB_NAME;
-extern char* DB_USERNAME;
-extern char* DB_PASSWORD;
-
 #endif //CREDENTIALS_H

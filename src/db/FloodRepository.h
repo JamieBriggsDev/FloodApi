@@ -22,9 +22,11 @@ class FloodRepository : public IFloodRepository
   sqlite3* m_floodDb;
   mutable std::mutex m_mutex;  // mutable allows usage in const methods
 
+  const char* m_dbPath;
+
 
   public:
-  FloodRepository() : m_floodDb(nullptr) {};
+  explicit FloodRepository(const char* dbPath) : m_floodDb(nullptr), m_dbPath(dbPath) {};
   ~FloodRepository() override
   {
     sqlite3_close(m_floodDb);

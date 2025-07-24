@@ -80,10 +80,10 @@ void FloodRepository::init()
   }
 
   // Check the database file exists
-  if (SD.exists("/flood_downgraded.db"))
+  if (SD.exists(this->m_dbPath))
   {
     LOG.debug("Database file exists on SD card");
-    File file = SD.open("/flood_downgraded.db");
+    File file = SD.open(this->m_dbPath);
     LOG.debug_f("File size: %d", file.size());
     file.close();
   }
@@ -98,9 +98,6 @@ void FloodRepository::init()
     LOG.error("No SD card attached");
     throw std::runtime_error("No SD card attached");
   }
-  LOG.info("TCP connection successful!");
-  client.stop(); // Close the test connection
-
 
   LOG.info("Initializing SQLite3...");
   int initialize = sqlite3_initialize();
@@ -130,16 +127,6 @@ std::vector<RiverReading> FloodRepository::getRiverReadings(const char* startDat
   std::lock_guard<std::mutex> lock(m_mutex);
   std::vector<RiverReading> result;
 
-  // Step 1: Create a cursor
-  MySQL_Cursor* cur_mem = new MySQL_Cursor(&conn);
-
-  // Step 2: Execute the query
-  std::stringstream sql;
-  // Casting pageSize to int as uint8_t is essentially an unsigned char, so 1 would return ' '.
-  sql << "SELECT * FROM RiverLevels WHERE timestamp >= '" << startDate << "' LIMIT " << static_cast<int>(pageSize)
-      << " OFFSET " << ((page - PAGE_OFFSET) * pageSize);
-  std::string query = sql.str();
-
   int rc = INT_MAX;
   sqlite3_stmt* stmt;
   const char* tail;
@@ -152,6 +139,11 @@ std::vector<RiverReading> FloodRepository::getRiverReadings(const char* startDat
    * `finalize`: Cleaning up the kitchen when you're done
    */
 
+  std::stringstream sql;
+  // Casting pageSize to int as uint8_t is essentially an unsigned char, so 1 would return ' '.
+  sql << "SELECT * FROM RiverLevels WHERE timestamp >= '" << startDate << "' LIMIT " << static_cast<int>(pageSize)
+      << " OFFSET " << ((page - PAGE_OFFSET) * pageSize);
+  std::string query = sql.str();
   LOG.debug_f("Preparing query: %s", query.c_str());
   // Turn SQL statement into something SQLite can use. This will be the stmt object.
   rc = sqlite3_prepare_v2(m_floodDb, query.c_str(), READ_ALL, &stmt, &tail);
