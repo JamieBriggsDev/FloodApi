@@ -20,26 +20,7 @@ int openDb(const char* filename, sqlite3** db)
 {
 
 
-  // Listing all files
-  File root = SD.open("/");
-  File file = root.openNextFile();
-
-  LOG.info_f("Listing files in root directory: %s", root.name());
-  while (file)
-  {
-    LOG.debug_f("Found file: %s, size: %d", file.name(), file.size());
-    file = root.openNextFile();
-  }
-  root.close();
-
-  std::stringstream fullPathStream;
-  fullPathStream << "/sd";
-  fullPathStream << filename;
-  auto fullPath = fullPathStream.str().c_str();
-
-  LOG.info_f("Attempting to open database at: %s", fullPath);
-
-  const int rc = sqlite3_open(fullPath, db);
+  const int rc = sqlite3_open(filename, db);
 
   if (rc)
   {
@@ -47,7 +28,7 @@ int openDb(const char* filename, sqlite3** db)
     return rc;
   }
 
-  LOG.info_f("Opened database successfully: %s", fullPath);
+  LOG.info_f("Opened database successfully: %s", filename);
   return rc;
 }
 
@@ -126,7 +107,7 @@ void FloodRepository::init()
 
 #if true
   LOG.info("Initializing SQLite3...");
-  const int initialize = sqlite3_initialize();
+  int initialize = sqlite3_initialize();
   if (initialize != SQLITE_OK)
   {
     LOG.error_f("Failed to initialize SQLite3: %s", initialize);
@@ -136,7 +117,9 @@ void FloodRepository::init()
 
 #if true
   LOG.debug("Opening DB...");
-  if (openDb(this->m_dbPath, &m_floodDb) != SQLITE_OK)
+  std::stringstream vfsPath;
+  vfsPath << "/sd" << this->m_dbPath;
+  if (openDb(vfsPath.str().c_str(), &m_floodDb) != SQLITE_OK)
   {
     LOG.error("Failed to open database");
     throw new std::runtime_error("Failed to open database");

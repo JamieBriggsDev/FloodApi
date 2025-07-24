@@ -21,7 +21,7 @@ protected:
 
   void SetUp() override
   {
-    repository_ = new FloodRepository("/flood_downgraded.db");
+    repository_ = new FloodRepository("/small_flood_downgraded.db");
     repository_->init();
   }
 };

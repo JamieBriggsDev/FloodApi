@@ -49,7 +49,7 @@ void setup()
 #if REPO_ENABLED
 
   LOG.debug("Creating Flood repository...");
-  flood_repository = new FloodRepository("/flood_downgraded.db");
+  flood_repository = new FloodRepository("/small_flood_downgraded.db");
 
 #endif
 
