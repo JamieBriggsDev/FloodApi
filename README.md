@@ -76,3 +76,18 @@ CREATE USER IF NOT EXISTS 'floodUser'@'%';
 ALTER USER 'floodUser'@'%' IDENTIFIED WITH mysql_native_password BY 'floodPassword';
 FLUSH PRIVILEGES;
 ```
+
+
+I can't use both my FloodRepository and FloodRoutes at the same time and I'm not sure why. When I run just the FloodRepository, I have this heap size available to me still:
+
+[DEBUG] Free Heap: 256864 bytes
+
+When I use just the FloodRoutes, I have this amount of free memory:
+
+[DEBUG] Free Heap: 244848 bytes
+
+My initial heap size is this:
+
+[DEBUG] Initial Free Heap: 327820 bytes
+
+So theoretically, this should just work with both?

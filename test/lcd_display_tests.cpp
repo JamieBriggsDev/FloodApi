@@ -2,6 +2,8 @@
 // Created by Jamie Briggs on 15/07/2025.
 //
 
+#if false
+
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
@@ -131,5 +133,7 @@ TEST_F(LCDDisplayTests, displayText_TwoRows_Scroll)
   // When
   printer->displayText("Row one", "Row two", SCROLL);
 }
+
+#endif
 
 

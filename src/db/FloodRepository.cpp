@@ -5,44 +5,62 @@
 #include "../../src/db/FloodRepository.h"
 
 #include <SD.h>
-#include <SD_MMC.h>
 #include <SPI.h>
-#include <WiFiClient.h>
-#include <cstdlib>
-#include <mutex>
 #include <sstream>
 #include <string>
 
-#include <ESP32Ping.h>
 #include "FloodSchema.h"
-#include "MySQL_Connection.h"
-#include "MySQL_Cursor.h"
 #include "def_pin_outs.h"
 #include "logger/def_logger_factory.h"
 
 #define READ_ALL -1
 #define PAGE_OFFSET 1
 
-WiFiClient client; // Use this for WiFi instead of EthernetClient
-MySQL_Connection conn((Client*)&client);
-
-
-// Add this function to your code
-bool pingHost(const IPAddress& ip)
+int openDb(const char* filename, sqlite3** db)
 {
-  LOG.info_f("Attempting to ping database host at %s", ip.toString().c_str());
+  LOG.info_f("Attempting to open database at: %s", filename);
 
-  const bool success = Ping.ping(ip, 5);
+  const int rc = sqlite3_open(filename, db);
 
-  if (!success)
+  if (rc)
   {
-    LOG.error_f("Could not ping %s", ip.toString());
-    return false;
+    LOG.error_f("Can't open database: %s", sqlite3_errmsg(*db));
+    return rc;
   }
 
-  Serial.println("Ping successful!");
+  LOG.info_f("Opened database successfully: %s", filename);
+  return rc;
+}
 
-  return success;
+const char* data = "Callback function called";
+static int callback(void* data, int argc, char** argv, char** azColName)
+{
+  LOG.info_f("%s: ", (const char*)data);
+  for (int i = 0; i < argc; i++)
+  {
+    LOG.info_f("%s = %s\n", azColName[i], argv[i] ? argv[i] : "NULL");
+  }
+  LOG.info("\n");
+  return 0;
+}
+
+char* zErrMsg = nullptr;
+int db_exec(sqlite3* db, const char* sql)
+{
+  Serial.println(sql);
+  long start = micros();
+  int rc = sqlite3_exec(db, sql, callback, (void*)data, &zErrMsg);
+  if (rc != SQLITE_OK)
+  {
+    LOG.error_f("SQL Error: %s", zErrMsg);
+    sqlite3_free(zErrMsg);
+  }
+  else
+  {
+    LOG.info_f("Operation done successfully: %s", sql);
+  }
+  LOG.info_f("Time taken: %d", micros() - start);
+  return rc;
 }
 
 
@@ -50,99 +68,115 @@ void FloodRepository::init()
 {
   LOG.info("Initializing FloodRepository");
 
-  const IPAddress DB_HOSTNAME(192, 168, 1, 160);
-  int DB_PORT = 3306;
-  char DB_NAME[] = "floodDatabase";
-  char DB_USERNAME[] = "floodUser";
-  char DB_PASSWORD[] = "floodPassword";
-
-  // Try to ping the database host first
-  if (!pingHost(DB_HOSTNAME))
+#if false
+  LOG.debug("Beginning SPI");
+  SPI.begin();
+  LOG.debug("Beginning SD ");
+  if (!SD.begin(MICRO_SD_CS_PIN))
   {
-    LOG.error("Could not ping database host - check network connectivity");
-    throw new std::runtime_error("Could not ping database host - check network connectivity");
+    LOG.error("Card Mount Failed");
+    throw std::runtime_error("Card Mount Failed");
   }
+#endif
 
-  // Try basic TCP connection first
-  LOG.info("Testing TCP connection...");
-  if (!client.connect(DB_HOSTNAME, DB_PORT)) {
-    LOG.error("TCP connection failed!");
-    throw std::runtime_error("TCP connection failed");
-  }
-  LOG.info("TCP connection successful!");
-  client.stop(); // Close the test connection
-
-
-
-  LOG.info_f("Connecting to database: %s@%s:%d", DB_NAME, DB_HOSTNAME.toString(), DB_PORT);
-  int retries = 0;
-  const int MAX_RETRIES = 5;
-  LOG.debug_f("Heap size: %d", ESP.getHeapSize());
-  LOG.debug_f("Free heap before connection: %d", ESP.getFreeHeap());
-  while (!conn.connect(DB_HOSTNAME, DB_PORT, DB_USERNAME, DB_PASSWORD, DB_NAME))
+#if false
+  uint8_t cardType = SD.cardType();
+  if (cardType == CARD_NONE)
   {
-    LOG.error_f("Connection attempt %d failed", retries + 1);
-
-    if (++retries >= MAX_RETRIES) {
-      LOG.error("Max connection retries reached");
-      throw std::runtime_error("Could not connect to database after maximum retries");
-    }
-    delay(2000); // Increased delay
-    LOG.debug("Still trying to connect");
+    LOG.error("No SD card attached");
+    throw std::runtime_error("No SD card attached");
   }
-  // Try connection here
-  LOG.debug_f("Free heap after connection: %d", ESP.getFreeHeap());
+#endif
 
+#if false
+  // Check the database file exists
+  if (SD.exists(this->m_dbPath))
+  {
+    LOG.debug("Database file exists on SD card");
+    File file = SD.open(this->m_dbPath);
+    LOG.debug_f("File size: %d", file.size());
+    file.close();
+  }
+  else
+  {
+    LOG.error("Database file not found on SD card");
+  }
+#endif
+
+
+#if false
+  LOG.info("Initializing SQLite3...");
+  int initialize = sqlite3_initialize();
+  if (initialize != SQLITE_OK)
+  {
+    LOG.error_f("Failed to initialize SQLite3: %s", initialize);
+    throw std::runtime_error("Failed to initialize SQLite3");
+  }
+#endif
+
+#if false
+  LOG.debug("Opening DB...");
+  if (openDb("/sd/flood_downgraded.db", &m_floodDb) != SQLITE_OK)
+  {
+    LOG.error("Failed to open database");
+    throw new std::runtime_error("Failed to open database");
+  }
   LOG.info_f("Connected to database!");
+#endif
 
   LOG.info("Completed initialization for FloodRepository");
 }
 
 
-std::vector<RiverReading> FloodRepository::getRiverReadings(const char* startDate, uint16_t page,
-                                                            uint8_t pageSize) const
+std::vector<RiverReading> FloodRepository::getRiverReadings(const char* startDate, uint16_t page, uint8_t pageSize) const
 {
   std::vector<RiverReading> result;
 
-  // Step 1: Create a cursor
-  MySQL_Cursor* cur_mem = new MySQL_Cursor(&conn);
+  int rc = INT_MAX;
+  sqlite3_stmt* stmt;
+  const char* tail;
+  int rowCount = 0;
 
-  // Step 2: Execute the query
+  /**
+   * Think of it like this:
+   * `prepare`: Compiling a recipe
+   * `step`: Following each step of the recipe
+   * `finalize`: Cleaning up the kitchen when you're done
+   */
+
   std::stringstream sql;
   // Casting pageSize to int as uint8_t is essentially an unsigned char, so 1 would return ' '.
   sql << "SELECT * FROM RiverLevels WHERE timestamp >= '" << startDate << "' LIMIT " << static_cast<int>(pageSize)
       << " OFFSET " << ((page - PAGE_OFFSET) * pageSize);
-  LOG.debug_f("Executing SQL: %s", sql.str().c_str());
-  const char* query = sql.str().c_str();
-  cur_mem->execute(query);
-
-  // Step 3: Fetch the columns
-  column_names* columns = cur_mem->get_columns();
-
-  row_values* row = nullptr;
-  long head_count = 0;
-
-  // Read the rows
-  do
+  std::string query = sql.str();
+  LOG.debug_f("Preparing query: %s", query.c_str());
+  // Turn SQL statement into something SQLite can use. This will be the stmt object.
+  rc = sqlite3_prepare_v2(m_floodDb, query.c_str(), READ_ALL, &stmt, &tail);
+  if (rc != SQLITE_OK)
   {
-    row = cur_mem->get_next_row();
-    if (row != NULL)
-    {
-      char* endptr;
-      double level = strtod(row->values[1], &endptr);
-      if (endptr == row->values[1] || *endptr != '\0')
-      {
-        // Conversion failed
-        LOG.error_f("Failed to convert string '%s' to double", row->values[1]);
-        continue;
-      }
-
-      RiverReading reading{.timestamp = row->values[0], .level = level};
-    }
+    LOG.error_f("Failed to prepare statement: %s", sqlite3_errmsg(m_floodDb));
+    throw new std::runtime_error("Failed to prepare statement");
   }
-  while (row != NULL);
-  // Deleting the cursor also frees up memory used
-  delete cur_mem;
+
+  LOG.debug("Stepping through statement");
+  // TODO: This will run out of memory if unbound, keep an eye on it.
+  //  It may be that I have to push the data to browser and flush it earlier.
+  // Next, perform the step command. This will execute the prepared stmt object.
+  while (sqlite3_step(stmt) == SQLITE_ROW)
+  {
+    // Map to struct and add to result.
+    const char* temp = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));
+    std::string timestamp(temp);  // Creates a copy of the string data
+    const double level = sqlite3_column_double(stmt, 1);
+    RiverReading reading{.timestamp = timestamp, .level = level};
+    result.push_back(reading);
+
+    rowCount++;
+  }
+
+  LOG.debug_f("Finalizing. Found %d results.", result.size());
+  // Finalize, which destroys the prepared statement and frees up resources for the next query.
+  sqlite3_finalize(stmt);
 
 
   return result;

@@ -4,7 +4,7 @@
 
 #include "def_pin_outs.h"
 
-#include <time.h>
+#include <ctime>
 #include "logger/def_logger_factory.h"
 #include "sd/MicroSDReader.h"
 
