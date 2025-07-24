@@ -18,9 +18,28 @@
 
 int openDb(const char* filename, sqlite3** db)
 {
-  LOG.info_f("Attempting to open database at: %s", filename);
 
-  const int rc = sqlite3_open(filename, db);
+
+  // Listing all files
+  File root = SD.open("/");
+  File file = root.openNextFile();
+
+  LOG.info_f("Listing files in root directory: %s", root.name());
+  while (file)
+  {
+    LOG.debug_f("Found file: %s, size: %d", file.name(), file.size());
+    file = root.openNextFile();
+  }
+  root.close();
+
+  std::stringstream fullPathStream;
+  fullPathStream << "/sd";
+  fullPathStream << filename;
+  auto fullPath = fullPathStream.str().c_str();
+
+  LOG.info_f("Attempting to open database at: %s", fullPath);
+
+  const int rc = sqlite3_open(fullPath, db);
 
   if (rc)
   {
@@ -28,7 +47,7 @@ int openDb(const char* filename, sqlite3** db)
     return rc;
   }
 
-  LOG.info_f("Opened database successfully: %s", filename);
+  LOG.info_f("Opened database successfully: %s", fullPath);
   return rc;
 }
 
@@ -68,7 +87,7 @@ void FloodRepository::init()
 {
   LOG.info("Initializing FloodRepository");
 
-#if false
+#if true
   LOG.debug("Beginning SPI");
   SPI.begin();
   LOG.debug("Beginning SD ");
@@ -79,20 +98,21 @@ void FloodRepository::init()
   }
 #endif
 
-#if false
+#if true
   uint8_t cardType = SD.cardType();
   if (cardType == CARD_NONE)
   {
     LOG.error("No SD card attached");
     throw std::runtime_error("No SD card attached");
   }
+
 #endif
 
-#if false
+#if true
   // Check the database file exists
   if (SD.exists(this->m_dbPath))
   {
-    LOG.debug("Database file exists on SD card");
+    LOG.debug_f("Database file '%s' exists on SD card", this->m_dbPath);
     File file = SD.open(this->m_dbPath);
     LOG.debug_f("File size: %d", file.size());
     file.close();
@@ -104,9 +124,9 @@ void FloodRepository::init()
 #endif
 
 
-#if false
+#if true
   LOG.info("Initializing SQLite3...");
-  int initialize = sqlite3_initialize();
+  const int initialize = sqlite3_initialize();
   if (initialize != SQLITE_OK)
   {
     LOG.error_f("Failed to initialize SQLite3: %s", initialize);
@@ -114,9 +134,9 @@ void FloodRepository::init()
   }
 #endif
 
-#if false
+#if true
   LOG.debug("Opening DB...");
-  if (openDb("/sd/flood_downgraded.db", &m_floodDb) != SQLITE_OK)
+  if (openDb(this->m_dbPath, &m_floodDb) != SQLITE_OK)
   {
     LOG.error("Failed to open database");
     throw new std::runtime_error("Failed to open database");
@@ -128,7 +148,8 @@ void FloodRepository::init()
 }
 
 
-std::vector<RiverReading> FloodRepository::getRiverReadings(const char* startDate, uint16_t page, uint8_t pageSize) const
+std::vector<RiverReading> FloodRepository::getRiverReadings(const char* startDate, uint16_t page,
+                                                            uint8_t pageSize) const
 {
   std::vector<RiverReading> result;
 
@@ -166,7 +187,7 @@ std::vector<RiverReading> FloodRepository::getRiverReadings(const char* startDat
   {
     // Map to struct and add to result.
     const char* temp = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));
-    std::string timestamp(temp);  // Creates a copy of the string data
+    std::string timestamp(temp); // Creates a copy of the string data
     const double level = sqlite3_column_double(stmt, 1);
     RiverReading reading{.timestamp = timestamp, .level = level};
     result.push_back(reading);

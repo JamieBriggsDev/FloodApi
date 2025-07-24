@@ -13,7 +13,7 @@
 #define ESP_D3_PIN 14
 
 // MicroSD Module points
-#define MICRO_SD_CS_PIN 0
+#define MICRO_SD_CS_PIN 4
 // These three pins are standard on ESP32-E and should not be modified
 #define MICRO_SD_MOSI_PIN 23
 #define MICRO_SD_MISO_PIN 19
