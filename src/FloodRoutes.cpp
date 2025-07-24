@@ -17,6 +17,14 @@
 #include "display/IDisplay.h"
 #include "logger/def_logger_factory.h"
 
+std::string FloodRoutes::getQueryParameter(const char* param, const std::string& defaultValue)
+{
+  if (!m_server.hasArg(param)) {
+    return defaultValue;
+  }
+  return std::string(m_server.arg(param).c_str());
+}
+
 // Add static member definition
 void FloodRoutes::river()
 {
@@ -24,7 +32,16 @@ void FloodRoutes::river()
 
   auto start = std::chrono::system_clock::now();
 
-  std::vector<RiverReading> river_readings = s_floodRepository->getRiverReadings("2022-12-25");
+  // Get request parameters
+  // Get the date parameter
+  std::string date = getQueryParameter("start", "2022-12-25");
+  // Get limit parameter with default value
+  int limit = std::stoi(getQueryParameter("page", "1"));
+  // Get page parameter with default value
+  int pagesize = std::stoi(getQueryParameter("pagesize", "12"));
+
+
+  std::vector<RiverReading> river_readings = s_floodRepository->getRiverReadings(date.c_str(), limit, pagesize);
 
   // Convert to JSON
   const JsonDocument doc = s_floodMapper->getFloodData(river_readings);
@@ -40,10 +57,8 @@ void FloodRoutes::river()
   return m_server.send(200, "application/json", result);
 }
 
-void FloodRoutes::riverStation()
-{
-  return m_server.send(404, "application/json", "{}");
-}
+void FloodRoutes::riverStation() { return m_server.send(404, "application/json", "{}"); }
+
 
 FloodRoutes::FloodRoutes(IDisplay* display, IFloodRepository* flood_repository, IFloodMapper* flood_mapper) :
     m_server(PORT)

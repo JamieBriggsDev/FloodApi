@@ -6,6 +6,7 @@
 #define FLOODROUTES_H
 
 #include <WebServer.h>
+#include <string>
 
 #include "IFloodMapper.h"
 #include "db/IFloodRepository.h"
@@ -23,6 +24,8 @@ class FloodRoutes
   IDisplay* s_display;
   IFloodMapper* s_floodMapper;
   char m_expectHeader[20]{};
+
+  std::string getQueryParameter(const char* param, const std::string& defaultValue = "");
 
   public:
   FloodRoutes(IDisplay* display, IFloodRepository* flood_repository, IFloodMapper* flood_mapper);
