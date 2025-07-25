@@ -26,6 +26,10 @@ class FloodRoutes
   char m_expectHeader[20]{};
 
   std::string getQueryParameter(const char* param, const std::string& defaultValue = "");
+  void displayParameterValue(const char* paramName, const char* value) const
+  {
+    s_display->displayText(paramName, value, FLASH);
+  }
 
   public:
   FloodRoutes(IDisplay* display, IFloodRepository* flood_repository, IFloodMapper* flood_mapper);

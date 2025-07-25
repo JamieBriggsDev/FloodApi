@@ -18,8 +18,6 @@
 
 int openDb(const char* filename, sqlite3** db)
 {
-
-
   const int rc = sqlite3_open(filename, db);
 
   if (rc)
@@ -129,6 +127,11 @@ void FloodRepository::init()
 
   LOG.info("Completed initialization for FloodRepository");
 }
+bool FloodRepository::stationExists(const char* stationName) const
+{
+  // TODO: Implement this
+  return true;
+}
 
 
 std::vector<RiverReading> FloodRepository::getRiverReadings(const char* startDate, uint16_t page,
@@ -141,17 +144,14 @@ std::vector<RiverReading> FloodRepository::getRiverReadings(const char* startDat
   const char* tail;
   int rowCount = 0;
 
-  /**
-   * Think of it like this:
-   * `prepare`: Compiling a recipe
-   * `step`: Following each step of the recipe
-   * `finalize`: Cleaning up the kitchen when you're done
-   */
-
   std::stringstream sql;
   // Casting pageSize to int as uint8_t is essentially an unsigned char, so 1 would return ' '.
-  sql << "SELECT * FROM RiverLevels WHERE timestamp >= '" << startDate << "' LIMIT " << static_cast<int>(pageSize)
-      << " OFFSET " << ((page - PAGE_OFFSET) * pageSize);
+  sql << "SELECT * FROM RiverLevels";
+  if (startDate != nullptr && strlen(startDate) > 0)
+  {
+    sql << " WHERE timestamp >= '" << startDate << "'";
+  }
+  sql  << " LIMIT " << static_cast<int>(pageSize) << " OFFSET " << ((page - PAGE_OFFSET) * pageSize);
   std::string query = sql.str();
   LOG.debug_f("Preparing query: %s", query.c_str());
   // Turn SQL statement into something SQLite can use. This will be the stmt object.
@@ -189,6 +189,50 @@ std::vector<RainfallReading> FloodRepository::getStationRainfallReadings(const c
                                                                          uint16_t page, uint8_t pageSize) const
 {
   std::vector<RainfallReading> result;
+
+  int rc = INT_MAX;
+  sqlite3_stmt* stmt;
+  const char* tail;
+  int rowCount = 0;
+
+  std::stringstream sql;
+  // Casting pageSize to int as uint8_t is essentially an unsigned char, so 1 would return ' '.
+  sql << "SELECT r.TimeStamp, sn.Name, r.Level FROM Rainfalls r";
+  sql << " INNER JOIN StationNames sn ON r.StationId = sn.Id";
+  if (startDate != nullptr && strlen(startDate) > 0)
+  {
+    sql << " WHERE timestamp >= '" << startDate << "'";
+  }
+  sql << " LIMIT " << static_cast<int>(pageSize)
+      << " OFFSET " << ((page - PAGE_OFFSET) * pageSize);
+  std::string query = sql.str();
+  LOG.debug_f("Preparing query: %s", query.c_str());
+  // Turn SQL statement into something SQLite can use. This will be the stmt object.
+  rc = sqlite3_prepare_v2(m_floodDb, query.c_str(), READ_ALL, &stmt, &tail);
+  if (rc != SQLITE_OK)
+  {
+    LOG.error_f("Failed to prepare statement: %s", sqlite3_errmsg(m_floodDb));
+    throw new std::runtime_error("Failed to prepare statement");
+  }
+
+  LOG.debug("Stepping through statement");
+  // Next, perform the step command. This will execute the prepared stmt object.
+  while (sqlite3_step(stmt) == SQLITE_ROW)
+  {
+    // Map to struct and add to result.
+    const char* temp = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));
+    std::string timestamp(temp); // Creates a copy of the string data
+    const char* name = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
+    const double level = sqlite3_column_double(stmt, 2);
+    RainfallReading reading{.timestamp = timestamp, .station = name, .level = level};
+    result.push_back(reading);
+
+    rowCount++;
+  }
+
+  LOG.debug_f("Finalizing. Found %d results.", result.size());
+  // Finalize, which destroys the prepared statement and frees up resources for the next query.
+  sqlite3_finalize(stmt);
 
   return result;
 }

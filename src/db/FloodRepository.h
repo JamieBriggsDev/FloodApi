@@ -29,6 +29,7 @@ class FloodRepository : public IFloodRepository
     m_floodDb = nullptr;
   };
   void init() override;
+  bool stationExists(const char* stationName) const override;
   std::vector<RiverReading> getRiverReadings(const char* startDate, uint16_t page,
                                              uint8_t pageSize) const override;
   std::vector<RainfallReading> getStationRainfallReadings(const char* stationName, const char* startDate,

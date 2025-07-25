@@ -111,7 +111,7 @@ void loop()
   flood_mapper->getFloodData(riverReadings);
 #endif
 
-  delay(5000); // Wait 5 seconds
+  delay(1000); // Wait 5 seconds
 }
 
 void cleanup()

@@ -40,7 +40,7 @@ public:
   static constexpr int SCROLL_DELAY_MS = 0;
   static constexpr int SCROLL_PAUSE_DELAY_MS = 0;
 #else
-  static constexpr int FLASH_DISPLAY_TIME_MS = 3000;
+  static constexpr int FLASH_DISPLAY_TIME_MS = 500;
   static constexpr int SCROLL_DELAY_MS = 250;
   static constexpr int SCROLL_PAUSE_DELAY_MS = 1000;
 #endif

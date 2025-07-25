@@ -27,6 +27,19 @@ protected:
 };
 
 
+TEST_F(FloorRepositoryTests, GetRiversNoArguments)
+{
+  const auto riverReadings = repository_->getRiverReadings();
+
+  ASSERT_EQ(riverReadings.size(), 12);
+  const RiverReading expected{.timestamp = "2022-12-12 00:00:00", .level = 0.375};
+  const RiverReading actual = riverReadings[0];
+  ASSERT_EQ(actual, expected);
+
+}
+
+
+
 TEST_F(FloorRepositoryTests, GetSingleRiverLevel)
 {
   const auto riverReadings = repository_->getRiverReadings("2022-12-12", 1, 1);
