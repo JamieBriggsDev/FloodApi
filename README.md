@@ -1,5 +1,9 @@
 # Flood API
 
+![Firebeetle2-ESP32-E.jpeg](img/Firebeetle2-ESP32-E.jpeg)
+
+## Setup
+
 To get started, clone the repository.
 
 ```shell
@@ -55,39 +59,3 @@ brew install espressif
 ```
 
 Drivers for ESP32 and serial found [here](https://docs.espressif.com/projects/esp-idf/en/stable/esp32/get-started/linux-macos-setup.html).
-
-Need to modify `MySQL_Packet.h` to work with WiFi found [here](https://github.com/ChuckBell/MySQL_Connector_Arduino/wiki/Hardware-Guide#modifying-the-connector):
-```c++
-#ifdef ARDUINO_ARCH_ESP32 
-    #include <Arduino.h> 
-#elif ARDUINO_ARCH_ESP8266
-    #include <ESP8266WiFi.h>
-#else
-    #include <WiFi.h>
-//    #include <Ethernet.h>
-#endif
-```
-
-
-May also need this:
-```sql
--- First ensure the user exists
-CREATE USER IF NOT EXISTS 'floodUser'@'%';
-ALTER USER 'floodUser'@'%' IDENTIFIED WITH mysql_native_password BY 'floodPassword';
-FLUSH PRIVILEGES;
-```
-
-
-I can't use both my FloodRepository and FloodRoutes at the same time and I'm not sure why. When I run just the FloodRepository, I have this heap size available to me still:
-
-[DEBUG] Free Heap: 256864 bytes
-
-When I use just the FloodRoutes, I have this amount of free memory:
-
-[DEBUG] Free Heap: 244848 bytes
-
-My initial heap size is this:
-
-[DEBUG] Initial Free Heap: 327820 bytes
-
-So theoretically, this should just work with both?

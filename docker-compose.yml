@@ -8,17 +8,4 @@ services:
       - ./openapi.yaml:/spec/openapi.yaml
     environment:
       SWAGGER_JSON: /spec/openapi.yaml
-  flood-db:
-    image: mysql:5-oracle
-    container_name: flood-db
-    ports:
-      - "3306:3306"
-    environment:
-      - MYSQL_ROOT_USER=root
-      - MYSQL_ROOT_PASSWORD=secret
-      - MYSQL_DATABASE=floodDatabase
-      - MYSQL_USER=floodUser
-      - MYSQL_PASSWORD=floodPassword
-    volumes:
-      - ./flood_small.sql:/docker-entrypoint-initdb.d/init.sql
 
