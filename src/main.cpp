@@ -98,7 +98,7 @@ void setup()
 void loop()
 {
   // Monitor heap memory usage
-  LOG.debug_f("Free Heap: %d bytes, Largest Free Block: %d bytes", ESP.getFreeHeap(), ESP.getMaxAllocHeap());
+  LOG.debug_f("Free Heap: %d KB, Out of: %d KB", ESP.getFreeHeap() / 1024, ESP.getHeapSize() / 1024);
 
 #if ROUTES_ENABLED
   flood_routes->loop();

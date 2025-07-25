@@ -12,8 +12,6 @@
 
 void LCDDisplay::displayStickyMessage() const
 {
-  LOG.info(m_stickyTextRowOne.c_str());
-  LOG.info(m_stickyTextRowTwo.c_str());
 
   m_lcd.setCursor(0, 0);
   m_lcd.print(m_stickyTextRowOne.c_str());
@@ -72,18 +70,25 @@ void LCDDisplay::displayText(const char* rowOne, const char* rowTwo, PrintType p
   }
   else if (printType == STICKY)
   {
+    // Helps to separate messages in monitor output
+    LOG.info("\n~~~~~~~~~~~~~~~\n");
+    LOG.info(m_stickyTextRowOne.c_str());
+    LOG.info(m_stickyTextRowTwo.c_str());
     this->m_stickyTextRowOne = rowOne;
     this->m_stickyTextRowTwo = rowTwo;
+    // Helps to separate messages in monitor output
+    LOG.info("\n~~~~~~~~~~~~~~~\n");
   }
   else
   {
+    // Helps to separate messages in monitor output
+    LOG.info("\n~~~~~~~~~~~~~~~\n");
     this->displayScrollMessage(rowOne, rowTwo);
     // Helps to separate messages in monitor output
     LOG.info("\n~~~~~~~~~~~~~~~\n");
   }
   this->displayStickyMessage();
-  // Helps to separate messages in monitor output
-  LOG.info("\n~~~~~~~~~~~~~~~\n");
+
 }
 
 

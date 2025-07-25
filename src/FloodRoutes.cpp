@@ -12,27 +12,29 @@
 #include <chrono>
 #include <ctime>
 #include <iomanip>
+#include <uri/UriBraces.h>
 
 #include "def_wifi_settings.h"
 #include "display/IDisplay.h"
 #include "logger/def_logger_factory.h"
 
-std::string FloodRoutes::getQueryParameter(const char* param, const std::string& defaultValue)
+String FloodRoutes::getQueryParameter(const String& param, const String& defaultValue)
 {
   std::stringstream paramDisplay;
   paramDisplay << "PRM: " << param;
-
+  LOG.debug_f("Param: %s, Default: %s", param, defaultValue.c_str());
 
   if (!m_server.hasArg(param))
   {
-    displayParameterValue(paramDisplay.str().c_str(), defaultValue.empty() ? "EMPTY" : defaultValue.c_str());
-    return defaultValue.empty() ? "" : defaultValue;
+    LOG.debug_f("Param %s not found", param);
+    displayParameterValue(paramDisplay.str().c_str(), defaultValue.length() == 0 ? "EMPTY" : defaultValue.c_str());
+    return defaultValue.length() == 0 ? "" : defaultValue;
   }
 
-  const auto value = m_server.arg(param).c_str();
-  s_display->displayText(paramDisplay.str().c_str(), value, FLASH);
-  std::string result(value);
-  return result;
+  LOG.debug_f("Total request params: %d", m_server.args());
+  LOG.debug_f("Getting param arg: %s", m_server.arg(param));
+  s_display->displayText(paramDisplay.str().c_str(), m_server.arg(param).c_str(), FLASH);
+  return m_server.arg(param);
 }
 
 // Add static member definition
@@ -43,11 +45,11 @@ void FloodRoutes::river()
   s_display->displayText("Calling", "/river", FLASH);
   // Get request parameters
   // Get the date parameter
-  std::string date = getQueryParameter("start");
+  String date = getQueryParameter("start");
   // Get limit parameter with default value
-  int limit = std::stoi(getQueryParameter("page", "1"));
+  int limit = std::stoi(getQueryParameter("page", "1").c_str());
   // Get page parameter with default value
-  int pagesize = std::stoi(getQueryParameter("pagesize", "12"));
+  int pagesize = std::stoi(getQueryParameter("pagesize", "12").c_str());
 
 
   std::vector<RiverReading> river_readings = s_floodRepository->getRiverReadings(date.c_str(), limit, pagesize);
@@ -63,37 +65,36 @@ void FloodRoutes::river()
   return m_server.send(200, "application/json", result);
 }
 
-void FloodRoutes::riverStation()
+void FloodRoutes::rainfallStation(const String& stationName)
 {
-  LOG.info("/rainfall/{station} requested");
-
+  String potFullPath = m_server.uri();
   // Get path param station name
-  std::string stationName = std::string(m_server.uri().substring(strlen("/rainfall/")).c_str());
-
-  s_display->displayText("Calling", ("/river" + stationName).c_str(), FLASH);
+  std::stringstream fullPath;
+  fullPath << "/rainfall/" << stationName.c_str();
+  LOG.info_f("/rainfall/{station} requested using %s", stationName);
+  LOG.info_f("Get endpoint %s", stationName.c_str());
+  s_display->displayText("Calling", fullPath.str().c_str(), FLASH);
 
 
   // You can validate against your known stations
-  if (!s_floodRepository->stationExists(stationName.c_str()))
+  std::string stationNameStr(stationName.c_str());
+  if (!s_floodRepository->stationExists(stationNameStr))
   {
     m_server.send(404, "application/json", "{\"error\": \"Invalid station name. Station not found.\"}");
     return;
   }
 
-
-  LOG.debug_f("Station name: %s", stationName.c_str());
-
   // Get request parameters
   // Get the date parameter
-  std::string date = getQueryParameter("start", "2022-12-25");
+  String date = getQueryParameter("start", "2022-12-25");
   // Get limit parameter with default value
-  int limit = std::stoi(getQueryParameter("page", "1"));
+  int limit = std::stoi(getQueryParameter("page", "1").c_str());
   // Get page parameter with default value
-  int pagesize = std::stoi(getQueryParameter("pagesize", "12"));
+  int pagesize = std::stoi(getQueryParameter("pagesize", "12").c_str());
 
 
   std::vector<RainfallReading> rainfall_readings =
-      s_floodRepository->getStationRainfallReadings(date.c_str(), stationName.c_str(), limit, pagesize);
+      s_floodRepository->getStationRainfallReadings(stationName.c_str(), date.c_str(), limit, pagesize);
 
   // Convert to JSON
   const JsonDocument doc = s_floodMapper->getRainfallReadings(rainfall_readings);
@@ -129,33 +130,20 @@ FloodRoutes::FloodRoutes(IDisplay* display, IFloodRepository* flood_repository, 
                 LOG.info_f("/river completed in %d milliseconds", duration.count());
               });
   // GET: /rainfall/{stationName}
-  // More strict pattern: must start and end with alphanumeric, can have hyphens in between
+  m_server.on(UriBraces("/rainfall/{}"), HTTP_GET,
+              [this]()
+              {
+                auto start = std::chrono::system_clock::now();
+                this->rainfallStation(m_server.pathArg(0));
 
-  // m_server.on("^\\/rainfall\\/([a-z0-9-]+)$", HTTP_GET, [this]() { this->riverStation(); });
-  //  TODO: There is a better way to do this but time constraints
-  m_server.onNotFound(
-      [this]()
-      {
-        String uri = m_server.uri();
-        if (uri.startsWith("/rainfall/"))
-        {
-          auto start = std::chrono::system_clock::now();
+                auto end = std::chrono::system_clock::now();
+                auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+                LOG.info_f("/river completed in %d milliseconds", duration.count());
+              });
 
-          this->riverStation();
-
-          auto end = std::chrono::system_clock::now();
-          auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-          LOG.info_f("/river completed in %d milliseconds", duration.count());
-        }
-        else
-        {
-          m_server.send(404, "application/json", "{\"error\": \"Route not found\"}");
-        }
-      });
-
-  // Begin server
-  LOG.debug("Starting server in FloodRoutes");
-  m_server.begin();
+// Begin server
+LOG.debug("Starting server in FloodRoutes");
+m_server.begin();
 }
 
 void FloodRoutes::loop() { m_server.handleClient(); }

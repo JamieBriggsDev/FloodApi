@@ -57,7 +57,7 @@ std::vector<FileEntry> MicroSDReader::listDir(fs::FS& fs, const char* dirname, b
   if (!root)
   {
     LOG.error("Failed to open directory");
-    throw new std::runtime_error("Failed to open directory");
+    throw std::runtime_error("Failed to open directory");
   }
   if (!root.isDirectory())
   {

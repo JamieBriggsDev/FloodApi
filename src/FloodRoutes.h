@@ -14,18 +14,15 @@
 
 class FloodRoutes
 {
-  private:
-
-
   void river();
-  void riverStation();
+  void rainfallStation(const String& stationName);
   WebServer m_server;
   IFloodRepository* s_floodRepository;
   IDisplay* s_display;
   IFloodMapper* s_floodMapper;
   char m_expectHeader[20]{};
 
-  std::string getQueryParameter(const char* param, const std::string& defaultValue = "");
+  String getQueryParameter(const String& param, const String& defaultValue = "");
   void displayParameterValue(const char* paramName, const char* value) const
   {
     s_display->displayText(paramName, value, FLASH);

@@ -120,10 +120,18 @@ void FloodRepository::init()
   if (openDb(vfsPath.str().c_str(), &m_floodDb) != SQLITE_OK)
   {
     LOG.error("Failed to open database");
-    throw new std::runtime_error("Failed to open database");
+    throw std::runtime_error("Failed to open database");
   }
   LOG.info_f("Connected to database!");
 #endif
+
+  LOG.debug("Caching station names");
+  auto stationNames = this->getAllStations();
+  if (stationNames.empty())
+  {
+    LOG.error("Failed to get station names");
+    throw std::runtime_error("Failed to get station names");
+  }
 
   LOG.info("Completed initialization for FloodRepository");
 }
@@ -144,7 +152,7 @@ std::map<std::string, std::string> FloodRepository::getAllStations()
   if (rc != SQLITE_OK)
   {
     LOG.error_f("Failed to prepare statement: %s", sqlite3_errmsg(m_floodDb));
-    throw new std::runtime_error("Failed to prepare statement");
+    throw std::runtime_error("Failed to prepare statement");
   }
 
   LOG.debug("Stepping through statement");
@@ -195,7 +203,7 @@ std::vector<RiverReading> FloodRepository::getRiverReadings(const char* startDat
   if (rc != SQLITE_OK)
   {
     LOG.error_f("Failed to prepare statement: %s", sqlite3_errmsg(m_floodDb));
-    throw new std::runtime_error("Failed to prepare statement");
+    throw std::runtime_error("Failed to prepare statement");
   }
 
   LOG.debug("Stepping through statement");
@@ -207,6 +215,7 @@ std::vector<RiverReading> FloodRepository::getRiverReadings(const char* startDat
     // Map to struct and add to result.
     const char* temp = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));
     std::string timestamp(temp); // Creates a copy of the string data
+
     const double level = sqlite3_column_double(stmt, 1);
     RiverReading reading{.timestamp = timestamp, .level = level};
     result.push_back(reading);
@@ -225,19 +234,23 @@ std::vector<RainfallReading> FloodRepository::getStationRainfallReadings(const c
                                                                          uint16_t page, uint8_t pageSize) const
 {
   std::vector<RainfallReading> result;
-
+  LOG.debug_f("Finding rainfall readings for station: %s", stationName);
+  std::string stationIdStr = stationName;
+  std::string stationId = m_stationMap.at(stationIdStr);
+  std::string stationIdOld = m_stationMap.at(stationIdStr);
   int rc = INT_MAX;
   sqlite3_stmt* stmt;
   const char* tail;
   int rowCount = 0;
 
+  LOG.debug("Creating SQL statement");
   std::stringstream sql;
   // Casting pageSize to int as uint8_t is essentially an unsigned char, so 1 would return ' '.
-  sql << "SELECT r.TimeStamp, sn.Name, r.Level FROM Rainfalls r";
-  sql << " INNER JOIN StationNames sn ON r.StationId = sn.Id";
+  sql << "SELECT r.TimeStamp, r.Level FROM Rainfalls r";
+  sql << " WHERE r.StationId = '" << stationId << "'";
   if (startDate != nullptr && strlen(startDate) > 0)
   {
-    sql << " WHERE timestamp >= '" << startDate << "'";
+    sql << " AND timestamp >= '" << startDate << "'";
   }
   sql << " LIMIT " << static_cast<int>(pageSize) << " OFFSET " << ((page - PAGE_OFFSET) * pageSize);
   std::string query = sql.str();
@@ -247,7 +260,7 @@ std::vector<RainfallReading> FloodRepository::getStationRainfallReadings(const c
   if (rc != SQLITE_OK)
   {
     LOG.error_f("Failed to prepare statement: %s", sqlite3_errmsg(m_floodDb));
-    throw new std::runtime_error("Failed to prepare statement");
+    throw std::runtime_error("Failed to prepare statement");
   }
 
   LOG.debug("Stepping through statement");
@@ -257,9 +270,8 @@ std::vector<RainfallReading> FloodRepository::getStationRainfallReadings(const c
     // Map to struct and add to result.
     const char* temp = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));
     std::string timestamp(temp); // Creates a copy of the string data
-    const char* name = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
-    const double level = sqlite3_column_double(stmt, 2);
-    RainfallReading reading{.timestamp = timestamp, .station = name, .level = level};
+    const double level = sqlite3_column_double(stmt, 1);
+    RainfallReading reading{.timestamp = timestamp, .station = stationName, .level = level};
     result.push_back(reading);
 
     rowCount++;
