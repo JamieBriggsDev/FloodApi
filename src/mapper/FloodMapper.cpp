@@ -4,7 +4,7 @@
 
 #include "FloodMapper.h"
 
-#include "logger/def_logger_factory.h"
+#include "../logger/def_logger_factory.h"
 
 JsonDocument FloodMapper::getFloodData(const std::vector<RiverReading>& riverReadings) const
 {
@@ -14,7 +14,11 @@ JsonDocument FloodMapper::getFloodData(const std::vector<RiverReading>& riverRea
     JsonDocument reading;
     reading["timestamp"] = riverReading.timestamp;
     reading["level"] = riverReading.level;
-    doc["readings"].add(reading);
+    if (!doc["readings"].add(reading))
+    {
+      LOG.error("Failed to add reading");
+      throw std::runtime_error("Failed to add reading");
+    }
   }
 
   std::string json;
@@ -32,7 +36,11 @@ JsonDocument FloodMapper::getRainfallReadings(const std::vector<RainfallReading>
     reading["timestamp"] = rainfallReading.timestamp;
     reading["level"] = rainfallReading.level;
     reading["station"] = rainfallReading.station;
-    doc["readings"].add(reading);
+    if (!doc["readings"].add(reading))
+    {
+      LOG.error("Failed to add reading");
+      throw std::runtime_error("Failed to add reading");
+    }
   }
 
   std::string json;

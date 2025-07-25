@@ -21,7 +21,7 @@
 String FloodRoutes::getQueryParameter(const String& param, const String& defaultValue)
 {
   std::stringstream paramDisplay;
-  paramDisplay << "PRM: " << param;
+  paramDisplay << "Param " << param.c_str();
   LOG.debug_f("Param: %s, Default: %s", param, defaultValue.c_str());
 
   if (!m_server.hasArg(param))
@@ -72,9 +72,8 @@ void FloodRoutes::rainfallStation(const String& stationName)
   std::stringstream fullPath;
   fullPath << "/rainfall/" << stationName.c_str();
   LOG.info_f("/rainfall/{station} requested using %s", stationName);
-  LOG.info_f("Get endpoint %s", stationName.c_str());
-  s_display->displayText("Calling", fullPath.str().c_str(), FLASH);
 
+  s_display->displayText("Calling", fullPath.str().c_str(), FLASH);
 
   // You can validate against your known stations
   std::string stationNameStr(stationName.c_str());

@@ -6,8 +6,8 @@
 #include <gtest/gtest.h>
 #include <cstring>
 
+#include "../src/mapper/FloodMapper.cpp"
 #include "FloodMapper.h"
-#include "FloodMapper.cpp"
 #include "db/FloodSchema.h"
 
 class FloodMapperTests : public ::testing::Test

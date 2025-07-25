@@ -5,7 +5,7 @@
 #ifndef FLOODMAPPER_H
 #define FLOODMAPPER_H
 
-#include "IFloodMapper.h"
+#include "../IFloodMapper.h"
 
 class FloodMapper : public IFloodMapper
 {
