@@ -26,6 +26,36 @@ protected:
   }
 };
 
+TEST_F(FloorRepositoryTests, GetAllStationNames)
+{
+  const auto stationMap = repository_->getAllStations();
+
+  ASSERT_EQ(stationMap.size(), 11);
+  // Verify each station name and ID mapping
+  
+  ASSERT_EQ(stationMap.at("hexham-firtrees"), "016140");
+  ASSERT_TRUE(repository_->stationExists("hexham-firtrees"));
+  ASSERT_EQ(stationMap.at("acomb-codlaw-hill"), "015313");
+  ASSERT_TRUE(repository_->stationExists("acomb-codlaw-hill"));
+  ASSERT_EQ(stationMap.at("catcleugh"), "010660");
+  ASSERT_TRUE(repository_->stationExists("catcleugh"));
+  ASSERT_EQ(stationMap.at("chirdon"), "010312");
+  ASSERT_TRUE(repository_->stationExists("chirdon"));
+  ASSERT_EQ(stationMap.at("kielder-ridge-end"), "008850");
+  ASSERT_TRUE(repository_->stationExists("kielder-ridge-end"));
+  ASSERT_EQ(stationMap.at("haltwhistle"), "014555");
+  ASSERT_TRUE(repository_->stationExists("haltwhistle"));
+  ASSERT_EQ(stationMap.at("knarsdale"), "013878");
+  ASSERT_TRUE(repository_->stationExists("knarsdale"));
+  ASSERT_EQ(stationMap.at("alston"), "013553");
+  ASSERT_TRUE(repository_->stationExists("alston"));
+  ASSERT_EQ(stationMap.at("hartside"), "013336");
+  ASSERT_TRUE(repository_->stationExists("hartside"));
+  ASSERT_EQ(stationMap.at("allenheads-allen-lodge"), "015347");
+  ASSERT_TRUE(repository_->stationExists("allenheads-allen-lodge"));
+  ASSERT_EQ(stationMap.at("garrigill-noonstones-hill"), "013045");
+  ASSERT_TRUE(repository_->stationExists("garrigill-noonstones-hill"));
+}
 
 TEST_F(FloorRepositoryTests, GetRiversNoArguments)
 {

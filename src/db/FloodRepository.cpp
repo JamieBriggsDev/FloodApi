@@ -127,10 +127,46 @@ void FloodRepository::init()
 
   LOG.info("Completed initialization for FloodRepository");
 }
-bool FloodRepository::stationExists(const char* stationName) const
+
+std::map<std::string, std::string> FloodRepository::getAllStations()
 {
-  // TODO: Implement this
-  return true;
+  std::map<std::string, std::string> result;
+
+  int rc = INT_MAX;
+  sqlite3_stmt* stmt;
+  const char* tail;
+
+  std::string query = "SELECT * FROM StationNames";
+
+  LOG.debug_f("Preparing query: %s", query.c_str());
+  // Turn SQL statement into something SQLite can use. This will be the stmt object.
+  rc = sqlite3_prepare_v2(m_floodDb, query.c_str(), READ_ALL, &stmt, &tail);
+  if (rc != SQLITE_OK)
+  {
+    LOG.error_f("Failed to prepare statement: %s", sqlite3_errmsg(m_floodDb));
+    throw new std::runtime_error("Failed to prepare statement");
+  }
+
+  LOG.debug("Stepping through statement");
+  // TODO: This will run out of memory if unbound, keep an eye on it.
+  //  It may be that I have to push the data to browser and flush it earlier.
+  // Next, perform the step command. This will execute the prepared stmt object.
+  while (sqlite3_step(stmt) == SQLITE_ROW)
+  {
+    // Map to struct and add to result.
+    std::string stationId = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));
+    std::string stationName = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
+    result.insert({stationName, stationId});
+  }
+
+  LOG.debug_f("Finalizing. Found %d results.", result.size());
+  // Finalize, which destroys the prepared statement and frees up resources for the next query.
+  sqlite3_finalize(stmt);
+
+  // Store station names
+  this->m_stationMap = result;
+
+  return result;
 }
 
 
@@ -151,7 +187,7 @@ std::vector<RiverReading> FloodRepository::getRiverReadings(const char* startDat
   {
     sql << " WHERE timestamp >= '" << startDate << "'";
   }
-  sql  << " LIMIT " << static_cast<int>(pageSize) << " OFFSET " << ((page - PAGE_OFFSET) * pageSize);
+  sql << " LIMIT " << static_cast<int>(pageSize) << " OFFSET " << ((page - PAGE_OFFSET) * pageSize);
   std::string query = sql.str();
   LOG.debug_f("Preparing query: %s", query.c_str());
   // Turn SQL statement into something SQLite can use. This will be the stmt object.
@@ -203,8 +239,7 @@ std::vector<RainfallReading> FloodRepository::getStationRainfallReadings(const c
   {
     sql << " WHERE timestamp >= '" << startDate << "'";
   }
-  sql << " LIMIT " << static_cast<int>(pageSize)
-      << " OFFSET " << ((page - PAGE_OFFSET) * pageSize);
+  sql << " LIMIT " << static_cast<int>(pageSize) << " OFFSET " << ((page - PAGE_OFFSET) * pageSize);
   std::string query = sql.str();
   LOG.debug_f("Preparing query: %s", query.c_str());
   // Turn SQL statement into something SQLite can use. This will be the stmt object.
