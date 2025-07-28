@@ -64,7 +64,7 @@ void setup()
   Serial.println("");
    */
   LOG.debug_f("Connecting to WiFi: %s", WIFI_SSID);
-  WiFi.mode(WIFI_STA);
+  WiFiClass::mode(WIFI_STA);
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
   while (WiFiClass::status() != WL_CONNECTED)
   {
@@ -75,7 +75,7 @@ void setup()
   // Display IP and PORT number
   std::ostringstream portMessage;
   portMessage << "Port: " << std::to_string(PORT);
-  display->displayText(WiFi.localIP().toString().c_str(), portMessage.str().c_str(), STICKY);
+  display->displayText(WiFi.localIP().toString().c_str(), portMessage.str(), STICKY);
 
   LOG.debug("Initializing Flood routes...");
   flood_routes = new FloodRoutes(display, flood_repository, flood_mapper);
