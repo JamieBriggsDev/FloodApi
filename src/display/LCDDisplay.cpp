@@ -19,7 +19,7 @@ void LCDDisplay::displayStickyMessage() const
   m_lcd.print(m_stickyTextRowTwo.c_str());
 }
 
-void LCDDisplay::displayFlashMessage(const char* rowOne, const char* rowTwo) const
+void LCDDisplay::displayFlashMessage(std::string rowOne, std::string rowTwo) const
 {
   LOG.info(rowOne);
   LOG.info(rowTwo);
@@ -34,7 +34,7 @@ void LCDDisplay::displayFlashMessage(const char* rowOne, const char* rowTwo) con
   m_lcd.clear();
 }
 
-void LCDDisplay::displayScrollMessage(const char* rowOne, const char* rowTwo) const
+void LCDDisplay::displayScrollMessage(std::string rowOne, std::string rowTwo) const
 {
   LOG.info(rowOne);
   LOG.info(rowTwo);
@@ -59,7 +59,7 @@ void LCDDisplay::displayScrollMessage(const char* rowOne, const char* rowTwo) co
 
 void LCDDisplay::clearDisplay() const { m_lcd.clear(); }
 
-void LCDDisplay::displayText(const char* rowOne, const char* rowTwo, PrintType printType)
+void LCDDisplay::displayText(std::string rowOne, std::string rowTwo, PrintType printType)
 {
   m_lcd.clear();
   if (printType == FLASH)
@@ -92,7 +92,7 @@ void LCDDisplay::displayText(const char* rowOne, const char* rowTwo, PrintType p
 }
 
 
-void LCDDisplay::displayText(const char* rowOne, PrintType printType)
+void LCDDisplay::displayText(std::string rowOne, PrintType printType)
 {
   LOG.debug("Clearing liquid display");
   this->displayText(rowOne, "", printType);

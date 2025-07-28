@@ -26,8 +26,8 @@ class LCDDisplay : public IDisplay
   ILiquidCrystalAdapter& m_lcd;
 
   void displayStickyMessage() const;
-  void displayFlashMessage(const char* rowOne, const char* rowTwo) const;
-  void displayScrollMessage(const char* rowOne, const char* rowTwo) const;
+  void displayFlashMessage(std::string rowOne, std::string rowTwo) const;
+  void displayScrollMessage(std::string rowOne, std::string rowTwo) const;
 
 public:
   static constexpr uint8_t LCD_COLUMNS = 16;
@@ -60,7 +60,7 @@ public:
    * @param rowTwo Second row of text to display (Default is STICKY)
    * @param printType How the text should be displayed
    */
-  void displayText(const char* rowOne, const char* rowTwo, PrintType printType = STICKY) override;
+  void displayText(std::string rowOne, std::string rowTwo, PrintType printType = STICKY) override;
 
   /**
    * Prints a single row of text onto an LCD screen. If print type is not STICKY, after displaying the message,
@@ -69,7 +69,7 @@ public:
    * @param rowOne Row of text to display
    * @param printType How the text should be displayed (Default is FLASH)
    */
-  void displayText(const char* rowOne, PrintType printType = STICKY) override;
+  void displayText(std::string rowOne, PrintType printType = STICKY) override;
 
   /**
    * Clears the current content displayed on the LCD screen.
