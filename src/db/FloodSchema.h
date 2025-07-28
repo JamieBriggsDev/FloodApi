@@ -28,21 +28,4 @@ struct RainfallReading
   }
 };
 
-/*
- * Leaving this commented out as I don't think it's needed, but will save in case
-enum Station
-{
-  ACOMB_CODLAW_HILL,
-  ALLENHEADS_ALLEN_LODGE,
-  ALSTON,
-  CATCLEUGH,
-  CHIRDON,
-  GARRIGILL_NOONSTONES_HILL,
-  HALTWHISTLE,
-  HARTSIDE,
-  HEXHAM_FIRTREES,
-  KIELDER_RIDGE_END,
-  KNARSDALE
-};*/
-
 #endif // SCHEMA_H

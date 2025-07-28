@@ -24,7 +24,7 @@ public:
    * @param rowTwo Second row of text to display (Default is STICKY)
    * @param printType How the text should be displayed
    */
-  virtual void displayText(const char* rowOne, const char* rowTwo, PrintType printType = STICKY) = 0;
+  virtual void displayText(std::string rowOne, std::string rowTwo, PrintType printType = STICKY) = 0;
   /**
      * Prints a single row of text onto an LCD screen. If print type is not STICKY, after displaying the message,
      * it will display the previous sticky message.
@@ -32,7 +32,7 @@ public:
      * @param rowOne Row of text to display
      * @param printType How the text should be displayed (Default is FLASH)
      */
-  virtual void displayText(const char* rowOne, PrintType printType = STICKY) = 0;
+  virtual void displayText(std::string rowOne, PrintType printType = STICKY) = 0;
   /**
      * Clears the current content displayed on the LCD screen.
      * This resets the display to an empty state.

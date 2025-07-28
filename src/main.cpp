@@ -14,15 +14,11 @@
 #include "logger/def_logger_factory.h"
 #include "mapper/FloodMapper.h"
 
-
 FloodRoutes* flood_routes;
 LiquidCrystalAdapter* lcd;
 LCDDisplay* display;
 IFloodRepository* flood_repository;
 IFloodMapper* flood_mapper;
-
-#define REPO_ENABLED 1
-#define ROUTES_ENABLED 1
 
 void setup()
 {
@@ -38,33 +34,24 @@ void setup()
 
 
   LOG.debug("Initializing LCD...");
-  lcd = new LiquidCrystalAdapter(ESP_RS_PIN, ESP_ENABLE_PIN, ESP_D0_PIN, ESP_D1_PIN, ESP_D2_PIN, ESP_D3_PIN);
+  lcd = new LiquidCrystalAdapter(PinOuts::ESP_RS_PIN, PinOuts::ESP_ENABLE_PIN, PinOuts::ESP_D0_PIN, PinOuts::ESP_D1_PIN,
+                                 PinOuts::ESP_D2_PIN, PinOuts::ESP_D3_PIN);
   LOG.debug("Initializing Printer Service...");
   display = new LCDDisplay(*lcd);
   display->displayText("Starting", "Flood App!", STICKY);
   LOG.debug_f("Initial Free Heap: %d bytes", ESP.getFreeHeap());
 
-#if REPO_ENABLED
 
   LOG.debug("Creating Flood repository...");
   flood_repository = new FloodRepository("/flood_downgraded.db");
 
-#endif
 
   LOG.debug("Initializing Flood mapper...");
   flood_mapper = new FloodMapper();
 
-#if ROUTES_ENABLED
-  // Why does example setup wifi like this?
-  /**
-  pinMode(led, OUTPUT);
-  digitalWrite(led, 0);
-  Serial.begin(115200);
-  WiFi.begin(ssid, password);
-  Serial.println("");
-   */
+
   LOG.debug_f("Connecting to WiFi: %s", WIFI_SSID);
-  WiFi.mode(WIFI_STA);
+  WiFiClass::mode(WIFI_STA);
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
   while (WiFiClass::status() != WL_CONNECTED)
   {
@@ -75,20 +62,15 @@ void setup()
   // Display IP and PORT number
   std::ostringstream portMessage;
   portMessage << "Port: " << std::to_string(PORT);
-  display->displayText(WiFi.localIP().toString().c_str(), portMessage.str().c_str(), STICKY);
+  display->displayText(WiFi.localIP().toString().c_str(), portMessage.str(), STICKY);
 
   LOG.debug("Initializing Flood routes...");
   flood_routes = new FloodRoutes(display, flood_repository, flood_mapper);
-#endif
 
-
-#if REPO_ENABLED && true
 
   LOG.debug("Initializing Flood repository...");
   // This is initialized after FloodRoutes has initialized
   flood_repository->init();
-
-#endif
 
   LOG.info("Completed setup!");
 }
@@ -98,16 +80,7 @@ void loop()
   // Monitor heap memory usage
   LOG.debug_f("Free Heap: %d KB, Out of: %d KB", ESP.getFreeHeap() / 1024, ESP.getHeapSize() / 1024);
 
-#if ROUTES_ENABLED
   flood_routes->loop();
-#endif
-
-
-#if REPO_ENABLED && false
-  const auto riverReadings = flood_repository->getRiverReadings("2022-12-12", 1, 10);
-  // This will log the JSON for me
-  flood_mapper->getFloodData(riverReadings);
-#endif
 
   delay(1000); // Wait 5 seconds
 }

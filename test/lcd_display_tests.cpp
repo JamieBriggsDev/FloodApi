@@ -2,7 +2,7 @@
 // Created by Jamie Briggs on 15/07/2025.
 //
 
-#if false
+#if true
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
@@ -17,7 +17,7 @@ class MockLiquidCrystal : public ILiquidCrystalAdapter
 {
   public:
   MOCK_METHOD(void, clear, (), (override));
-  MOCK_METHOD(void, print, (const char*), (override));
+  MOCK_METHOD(void, print, (std::string), (override));
   MOCK_METHOD(void, setCursor, (uint8_t, uint8_t), (override));
   MOCK_METHOD(void, begin, (uint8_t, uint8_t), (override));
   MOCK_METHOD(void, scrollDisplayLeft, (), (override));

@@ -10,7 +10,7 @@
 
 void MicroSDReader::init()
 {
-  if (!SD.begin(MICRO_SD_CS_PIN))
+  if (!SD.begin(PinOuts::MICRO_SD_CS_PIN))
   {
     Serial.println("Card Mount Failed");
     throw std::runtime_error("Card Mount Failed");
