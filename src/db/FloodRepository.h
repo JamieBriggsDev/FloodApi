@@ -38,9 +38,9 @@ class FloodRepository : public IFloodRepository
   {
     return m_stationMap.find(stationName) != m_stationMap.end();
   }
-  std::vector<RiverReading> getRiverReadings(const char* startDate, uint16_t page,
+  std::vector<RiverReading> getRiverReadings(std::string startDate, uint16_t page,
                                              uint8_t pageSize) const override;
-  std::vector<RainfallReading> getStationRainfallReadings(const char* stationName, const char* startDate,
+  std::vector<RainfallReading> getStationRainfallReadings(std::string stationName, std::string startDate,
                                                           uint16_t page, uint8_t pageSize) const override;
 };
 
