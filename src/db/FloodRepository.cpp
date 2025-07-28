@@ -69,7 +69,7 @@ void FloodRepository::init()
   LOG.debug("Beginning SPI");
   SPI.begin();
   LOG.debug("Beginning SD ");
-  while (!SD.begin(MICRO_SD_CS_PIN))
+  while (!SD.begin(PinOuts::MICRO_SD_CS_PIN))
   {
     LOG.error("Card Mount Failed");
   }
