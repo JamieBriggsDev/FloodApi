@@ -8,12 +8,12 @@
 #if defined(ARDUINO) || defined(ESP32)
 
 #include "LoggerSerial.h"
-#define LOG LoggerSerial::getInstance()
+#define LOG jbriggs::common::logger::LoggerSerial::getInstance()
 
 #else
 
 #include "Logger.h"
-#define LOG Logger::getInstance()
+#define LOG jbriggs::common::logger::Logger::getInstance()
 
 #endif
 

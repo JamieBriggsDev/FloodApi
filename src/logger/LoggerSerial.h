@@ -10,86 +10,77 @@
 #if defined(ARDUINO) || defined(ESP32)
 #include <Arduino.h>
 
-
-class LoggerSerial : public ILogger
+namespace jbriggs::common::logger
 {
+  class LoggerSerial : public ILogger
+  {
 public:
-  static ILogger& getInstance()
-  {
-    static LoggerSerial instance;
-    return instance;
-  }
-
-  // Delete copy constructor and assignment operator
-  LoggerSerial(const LoggerSerial&) = delete;
-  LoggerSerial& operator=(const LoggerSerial&) = delete;
-
-  void debug(const char* message) override {
-    log(Flood::LogLevel::F_DEBUG, message);
-  }
-
-  void info(const char* message) override {
-    log(Flood::LogLevel::F_INFO, message);
-  }
-
-  void warning(const char* message) override {
-    log(Flood::LogLevel::F_WARNING, message);
-  }
-
-  void error(const char* message) override {
-    log(Flood::LogLevel::F_ERROR, message);
-  }
-
-  void setLogLevel(Flood::LogLevel level) override
-  {
-    minimumLogLevel_ = level;
-  }
-
-  private:
-  LoggerSerial() = default;
-
-  void log(Flood::LogLevel level, const char* message)
-  {
-    if (level < minimumLogLevel_)
-      return;
-
-    /** Lock mutex when constructed, to prevent race conditions when writing log messages
-    Before:
-      [DEBUG] First m[INFO] Second messaes
-      sagege
-
-    After:
-      [DEBUG] First message
-      [INFO] Second message
-     */
-
-    const char* levelStr;
-    switch (level)
+    static ILogger& getInstance()
     {
-    case Flood::LogLevel::F_DEBUG:
-      levelStr = "DEBUG";
-      break;
-    case Flood::LogLevel::F_INFO:
-      levelStr = "INFO";
-      break;
-    case Flood::LogLevel::F_WARNING:
-      levelStr = "WARNING";
-      break;
-    case Flood::LogLevel::F_ERROR:
-      levelStr = "ERROR";
-      break;
-    default:
-      levelStr = "UNKNOWN";
+      static LoggerSerial instance;
+      return instance;
     }
 
-    Serial.print("[");
-    Serial.print(levelStr);
-    Serial.print("] ");
-    Serial.println(message);
-  }
+    // Delete copy constructor and assignment operator
+    LoggerSerial(const LoggerSerial&) = delete;
+    LoggerSerial& operator=(const LoggerSerial&) = delete;
 
-  Flood::LogLevel minimumLogLevel_ = Flood::LogLevel::F_DEBUG;
-};
+    void debug(const char* message) override { log(LogLevel::F_DEBUG, message); }
+
+    void info(const char* message) override { log(LogLevel::F_INFO, message); }
+
+    void warning(const char* message) override { log(LogLevel::F_WARNING, message); }
+
+    void error(const char* message) override { log(LogLevel::F_ERROR, message); }
+
+    void setLogLevel(LogLevel level) override { minimumLogLevel_ = level; }
+
+private:
+    LoggerSerial() = default;
+
+    void log(LogLevel level, const char* message)
+    {
+      if (level < minimumLogLevel_)
+        return;
+
+      /** Lock mutex when constructed, to prevent race conditions when writing log messages
+      Before:
+        [DEBUG] First m[INFO] Second messaes
+        sagege
+
+      After:
+        [DEBUG] First message
+        [INFO] Second message
+       */
+
+      const char* levelStr;
+      switch (level)
+      {
+      case LogLevel::F_DEBUG:
+        levelStr = "DEBUG";
+        break;
+      case LogLevel::F_INFO:
+        levelStr = "INFO";
+        break;
+      case LogLevel::F_WARNING:
+        levelStr = "WARNING";
+        break;
+      case LogLevel::F_ERROR:
+        levelStr = "ERROR";
+        break;
+      default:
+        levelStr = "UNKNOWN";
+      }
+
+      Serial.print("[");
+      Serial.print(levelStr);
+      Serial.print("] ");
+      Serial.println(message);
+    }
+
+    LogLevel minimumLogLevel_ = LogLevel::F_DEBUG;
+  };
+} // namespace jbriggs::common::logger
 
 
 #endif
