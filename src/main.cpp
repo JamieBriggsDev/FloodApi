@@ -15,7 +15,7 @@
 #include "mapper/FloodMapper.h"
 
 
-FloodRoutes* flood_routes;
+routes::FloodRoutes* flood_routes;
 common::display::LiquidCrystalAdapter* lcd;
 common::display::LCDDisplay* display;
 db::IFloodRepository* flood_repository;
@@ -32,7 +32,6 @@ void setup()
   {
     LOG.debug("Heap integrity check passed");
   }
-
 
   LOG.debug("Initializing LCD...");
   lcd = new common::display::LiquidCrystalAdapter(jbriggs::flood::config::ESP_RS_PIN, jbriggs::flood::config::ESP_ENABLE_PIN, jbriggs::flood::config::ESP_D0_PIN,
@@ -66,7 +65,7 @@ void setup()
   display->displayText(WiFi.localIP().toString().c_str(), portMessage.str(), common::display::STICKY);
 
   LOG.debug("Initializing Flood routes...");
-  flood_routes = new FloodRoutes(display, flood_repository, flood_mapper);
+  flood_routes = new routes::FloodRoutes(display, flood_repository, flood_mapper);
 
 
   LOG.debug("Initializing Flood repository...");

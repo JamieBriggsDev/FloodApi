@@ -17,6 +17,9 @@
 #include "display/IDisplay.h"
 #include "logger/def_logger_factory.h"
 
+
+using namespace jbriggs::flood::routes;
+
 std::string FloodRoutes::getQueryParameter(const std::string& param, const std::string& defaultValue)
 {
   std::stringstream paramDisplay;

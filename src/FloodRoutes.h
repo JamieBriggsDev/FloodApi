@@ -15,27 +15,31 @@
 using namespace jbriggs;
 using namespace jbriggs::flood;
 
-class FloodRoutes
+namespace jbriggs::flood::routes
 {
-  void river();
-  void rainfallStation(const std::string& stationName);
-  WebServer m_server;
-  db::IFloodRepository* s_floodRepository;
-  common::display::IDisplay* s_display;
-  mapper::IFloodMapper* s_floodMapper;
-  char m_expectHeader[20]{};
 
-  std::string getQueryParameter(const std::string& param, const std::string& defaultValue = "");
-  void displayParameterValue(const std::string& paramName, const std::string& value) const
+  class FloodRoutes
   {
-    s_display->displayText(paramName, value, common::display::FLASH);
-  }
+    void river();
+    void rainfallStation(const std::string& stationName);
+    WebServer m_server;
+    db::IFloodRepository* s_floodRepository;
+    common::display::IDisplay* s_display;
+    mapper::IFloodMapper* s_floodMapper;
+    char m_expectHeader[20]{};
 
-  public:
-  FloodRoutes(common::display::IDisplay* display, db::IFloodRepository* flood_repository,
-                  mapper::IFloodMapper* flood_mapper);
-  void loop();
-};
+    std::string getQueryParameter(const std::string& param, const std::string& defaultValue = "");
+    void displayParameterValue(const std::string& paramName, const std::string& value) const
+    {
+      s_display->displayText(paramName, value, common::display::FLASH);
+    }
+
+public:
+    FloodRoutes(common::display::IDisplay* display, db::IFloodRepository* flood_repository,
+                mapper::IFloodMapper* flood_mapper);
+    void loop();
+  };
+} // namespace jbriggs::flood::routes
 
 
 #endif // FLOODROUTES_H
