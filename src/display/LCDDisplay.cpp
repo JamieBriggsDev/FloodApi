@@ -10,16 +10,18 @@
 
 #include "logger/def_logger_factory.h"
 
+using namespace jbriggs::common::display;
+
 void LCDDisplay::displayStickyMessage() const
 {
 
   m_lcd.setCursor(0, 0);
-  m_lcd.print(m_stickyTextRowOne.c_str());
+  m_lcd.print(m_stickyTextRowOne);
   m_lcd.setCursor(0, 1);
-  m_lcd.print(m_stickyTextRowTwo.c_str());
+  m_lcd.print(m_stickyTextRowTwo);
 }
 
-void LCDDisplay::displayFlashMessage(std::string rowOne, std::string rowTwo) const
+void LCDDisplay::displayFlashMessage(const std::string& rowOne, const std::string& rowTwo) const
 {
   LOG.info(rowOne);
   LOG.info(rowTwo);
@@ -34,7 +36,7 @@ void LCDDisplay::displayFlashMessage(std::string rowOne, std::string rowTwo) con
   m_lcd.clear();
 }
 
-void LCDDisplay::displayScrollMessage(std::string rowOne, std::string rowTwo) const
+void LCDDisplay::displayScrollMessage(const std::string& rowOne, const std::string& rowTwo) const
 {
   LOG.info(rowOne);
   LOG.info(rowTwo);

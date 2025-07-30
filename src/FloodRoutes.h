@@ -12,6 +12,7 @@
 #include "db/IFloodRepository.h"
 #include "display/IDisplay.h"
 
+using namespace jbriggs;
 using namespace jbriggs::flood;
 
 class FloodRoutes
@@ -20,18 +21,18 @@ class FloodRoutes
   void rainfallStation(const std::string& stationName);
   WebServer m_server;
   db::IFloodRepository* s_floodRepository;
-  IDisplay* s_display;
+  common::display::IDisplay* s_display;
   IFloodMapper* s_floodMapper;
   char m_expectHeader[20]{};
 
   std::string getQueryParameter(const std::string& param, const std::string& defaultValue = "");
   void displayParameterValue(const std::string& paramName, const std::string& value) const
   {
-    s_display->displayText(paramName, value, FLASH);
+    s_display->displayText(paramName, value, common::display::FLASH);
   }
 
   public:
-  FloodRoutes(IDisplay* display, db::IFloodRepository* flood_repository, IFloodMapper* flood_mapper);
+  FloodRoutes(common::display::IDisplay* display, db::IFloodRepository* flood_repository, IFloodMapper* flood_mapper);
   void loop();
 };
 

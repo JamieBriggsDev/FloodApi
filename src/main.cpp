@@ -16,10 +16,11 @@
 
 
 using namespace jbriggs::flood;
+using namespace jbriggs;
 
 FloodRoutes* flood_routes;
-LiquidCrystalAdapter* lcd;
-LCDDisplay* display;
+common::display::LiquidCrystalAdapter* lcd;
+common::display::LCDDisplay* display;
 db::IFloodRepository* flood_repository;
 IFloodMapper* flood_mapper;
 
@@ -37,11 +38,11 @@ void setup()
 
 
   LOG.debug("Initializing LCD...");
-  lcd = new LiquidCrystalAdapter(PinOuts::ESP_RS_PIN, PinOuts::ESP_ENABLE_PIN, PinOuts::ESP_D0_PIN, PinOuts::ESP_D1_PIN,
-                                 PinOuts::ESP_D2_PIN, PinOuts::ESP_D3_PIN);
+  lcd = new common::display::LiquidCrystalAdapter(PinOuts::ESP_RS_PIN, PinOuts::ESP_ENABLE_PIN, PinOuts::ESP_D0_PIN,
+                                                  PinOuts::ESP_D1_PIN, PinOuts::ESP_D2_PIN, PinOuts::ESP_D3_PIN);
   LOG.debug("Initializing Printer Service...");
-  display = new LCDDisplay(*lcd);
-  display->displayText("Starting", "Flood App!", STICKY);
+  display = new common::display::LCDDisplay(*lcd);
+  display->displayText("Starting", "Flood App!", common::display::STICKY);
   LOG.debug_f("Initial Free Heap: %d bytes", ESP.getFreeHeap());
 
 
@@ -59,13 +60,13 @@ void setup()
   while (WiFiClass::status() != WL_CONNECTED)
   {
     delay(500);
-    display->displayText("Connecting..", FLASH);
+    display->displayText("Connecting..", common::display::FLASH);
   }
 
   // Display IP and PORT number
   std::ostringstream portMessage;
   portMessage << "Port: " << std::to_string(PORT);
-  display->displayText(WiFi.localIP().toString().c_str(), portMessage.str(), STICKY);
+  display->displayText(WiFi.localIP().toString().c_str(), portMessage.str(), common::display::STICKY);
 
   LOG.debug("Initializing Flood routes...");
   flood_routes = new FloodRoutes(display, flood_repository, flood_mapper);

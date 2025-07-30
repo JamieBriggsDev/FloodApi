@@ -35,7 +35,7 @@ std::string FloodRoutes::getQueryParameter(const std::string& param, const std::
   const auto paramValue = m_server.arg(paramName);
   std::string result(paramValue.c_str(), paramValue.length());
   LOG.debug_f("Getting param arg: %s", result);
-  s_display->displayText(paramDisplay.str(), result, FLASH);
+  s_display->displayText(paramDisplay.str(), result, common::display::FLASH);
   return result;
 }
 
@@ -44,7 +44,7 @@ void FloodRoutes::river()
 {
   LOG.info("/river requested");
 
-  s_display->displayText("Calling", "/river", FLASH);
+  s_display->displayText("Calling", "/river", common::display::FLASH);
   // Get request parameters
   // Get the date parameter
   const std::string date = getQueryParameter("start");
@@ -74,7 +74,7 @@ void FloodRoutes::rainfallStation(const std::string& stationName)
   fullPath << "/rainfall/" << stationName;
   LOG.info_f("/rainfall/{station} requested using %s", stationName);
 
-  s_display->displayText("Calling", fullPath.str(), FLASH);
+  s_display->displayText("Calling", fullPath.str(), common::display::FLASH);
 
   // You can validate against your known stations
   if (!s_floodRepository->stationExists(stationName))
@@ -104,7 +104,7 @@ void FloodRoutes::rainfallStation(const std::string& stationName)
 }
 
 
-FloodRoutes::FloodRoutes(IDisplay* display, db::IFloodRepository* flood_repository, IFloodMapper* flood_mapper) :
+FloodRoutes::FloodRoutes(common::display::IDisplay* display, db::IFloodRepository* flood_repository, IFloodMapper* flood_mapper) :
     m_server(PORT)
 {
   LOG.debug("Setting up FloodRoutes...");
