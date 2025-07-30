@@ -11,21 +11,26 @@
 
 #include <vector>
 
-struct FileEntry
+namespace jbriggs::common::storage
 {
-  String name;
-  uint32_t size;
-  String date;
-  bool isDirectory;
-};
 
-class MicroSDReader {
+  struct FileEntry
+  {
+    String name;
+    uint32_t size;
+    String date;
+    bool isDirectory;
+  };
+
+  class MicroSDReader
+  {
 public:
-  void init();
-  std::vector<FileEntry> listDir(fs::FS &fs, const char * dirname, bool showHidden = false) const;
-  void readFile(fs::FS &fs, const char * path) const;
-};
+    void init();
+    std::vector<FileEntry> listDir(fs::FS& fs, const char* dirname, bool showHidden = false) const;
+    void readFile(fs::FS& fs, const char* path) const;
+  };
+
+} // namespace jbriggs::common::storage
 
 
-
-#endif //MICROSDREADER_H
+#endif // MICROSDREADER_H

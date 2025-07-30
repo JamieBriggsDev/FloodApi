@@ -5,7 +5,7 @@
 #ifndef PINOUTS_H
 #define PINOUTS_H
 
-namespace PinOuts
+namespace jbriggs::flood::config
 {
   constexpr int ESP_RS_PIN = 17;
   constexpr int ESP_ENABLE_PIN = 16;
@@ -19,7 +19,7 @@ namespace PinOuts
   constexpr int MICRO_SD_MOSI_PIN = 23;
   constexpr int MICRO_SD_MISO_PIN = 19;
   constexpr int MICRO_SD_SCK_PIN = 18;
-} // namespace PinOuts
+} // namespace jbriggs::config
 
 
 #endif // PINOUTS_H

@@ -10,7 +10,7 @@
 #include <sstream>
 #include <string>
 
-#include "def_pin_outs.h"
+#include "../config/def_pin_outs.h"
 #include "logger/def_logger_factory.h"
 
 #define READ_ALL -1
@@ -71,7 +71,7 @@ void FloodRepository::init()
   LOG.debug("Beginning SPI");
   SPI.begin();
   LOG.debug("Beginning SD ");
-  while (!SD.begin(PinOuts::MICRO_SD_CS_PIN))
+  while (!SD.begin(config::MICRO_SD_CS_PIN))
   {
     LOG.error("Card Mount Failed");
   }

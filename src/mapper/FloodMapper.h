@@ -5,14 +5,18 @@
 #ifndef FLOODMAPPER_H
 #define FLOODMAPPER_H
 
-#include "../IFloodMapper.h"
+#include "IFloodMapper.h"
 
-class FloodMapper : public IFloodMapper
+namespace jbriggs::flood::mapper
 {
-  public:
-  JsonDocument getFloodData(const std::vector<db::RiverReading>& riverReadings) const override;
-  JsonDocument getRainfallReadings(const std::vector<db::RainfallReading>& rainfallReadings) const override;
-};
 
+  class FloodMapper : public IFloodMapper
+  {
+public:
+    JsonDocument getFloodData(const std::vector<db::RiverReading>& riverReadings) const override;
+    JsonDocument getRainfallReadings(const std::vector<db::RainfallReading>& rainfallReadings) const override;
+  };
+
+} // namespace jbriggs::flood::mapper
 
 #endif // FLOODMAPPER_H

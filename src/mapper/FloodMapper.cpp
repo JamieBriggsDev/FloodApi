@@ -6,6 +6,9 @@
 
 #include "../logger/def_logger_factory.h"
 
+
+using namespace jbriggs::flood::mapper;
+
 JsonDocument FloodMapper::getFloodData(const std::vector<db::RiverReading>& riverReadings) const
 {
   JsonDocument doc;

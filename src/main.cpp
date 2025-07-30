@@ -8,21 +8,18 @@
 #include "../src/display/LCDDisplay.h"
 #include "../src/display/LiquidCrystalAdapter.h"
 #include "FloodRoutes.h"
+#include "config/def_pin_outs.h"
+#include "config/def_wifi_settings.h"
 #include "db/FloodRepository.h"
-#include "def_pin_outs.h"
-#include "def_wifi_settings.h"
 #include "logger/def_logger_factory.h"
 #include "mapper/FloodMapper.h"
 
-
-using namespace jbriggs::flood;
-using namespace jbriggs;
 
 FloodRoutes* flood_routes;
 common::display::LiquidCrystalAdapter* lcd;
 common::display::LCDDisplay* display;
 db::IFloodRepository* flood_repository;
-IFloodMapper* flood_mapper;
+mapper::IFloodMapper* flood_mapper;
 
 void setup()
 {
@@ -38,8 +35,8 @@ void setup()
 
 
   LOG.debug("Initializing LCD...");
-  lcd = new common::display::LiquidCrystalAdapter(PinOuts::ESP_RS_PIN, PinOuts::ESP_ENABLE_PIN, PinOuts::ESP_D0_PIN,
-                                                  PinOuts::ESP_D1_PIN, PinOuts::ESP_D2_PIN, PinOuts::ESP_D3_PIN);
+  lcd = new common::display::LiquidCrystalAdapter(jbriggs::flood::config::ESP_RS_PIN, jbriggs::flood::config::ESP_ENABLE_PIN, jbriggs::flood::config::ESP_D0_PIN,
+                                                  jbriggs::flood::config::ESP_D1_PIN, jbriggs::flood::config::ESP_D2_PIN, jbriggs::flood::config::ESP_D3_PIN);
   LOG.debug("Initializing Printer Service...");
   display = new common::display::LCDDisplay(*lcd);
   display->displayText("Starting", "Flood App!", common::display::STICKY);
@@ -51,12 +48,12 @@ void setup()
 
 
   LOG.debug("Initializing Flood mapper...");
-  flood_mapper = new FloodMapper();
+  flood_mapper = new mapper::FloodMapper();
 
 
-  LOG.debug_f("Connecting to WiFi: %s", WIFI_SSID);
+  LOG.debug_f("Connecting to WiFi: %s", flood::config::WIFI_SSID);
   WiFiClass::mode(WIFI_STA);
-  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+  WiFi.begin(flood::config::WIFI_SSID, flood::config::WIFI_PASSWORD);
   while (WiFiClass::status() != WL_CONNECTED)
   {
     delay(500);
@@ -65,7 +62,7 @@ void setup()
 
   // Display IP and PORT number
   std::ostringstream portMessage;
-  portMessage << "Port: " << std::to_string(PORT);
+  portMessage << "Port: " << std::to_string(flood::config::PORT);
   display->displayText(WiFi.localIP().toString().c_str(), portMessage.str(), common::display::STICKY);
 
   LOG.debug("Initializing Flood routes...");

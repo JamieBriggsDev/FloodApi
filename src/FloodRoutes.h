@@ -8,9 +8,9 @@
 #include <WebServer.h>
 #include <string>
 
-#include "IFloodMapper.h"
 #include "db/IFloodRepository.h"
 #include "display/IDisplay.h"
+#include "mapper/IFloodMapper.h"
 
 using namespace jbriggs;
 using namespace jbriggs::flood;
@@ -22,7 +22,7 @@ class FloodRoutes
   WebServer m_server;
   db::IFloodRepository* s_floodRepository;
   common::display::IDisplay* s_display;
-  IFloodMapper* s_floodMapper;
+  mapper::IFloodMapper* s_floodMapper;
   char m_expectHeader[20]{};
 
   std::string getQueryParameter(const std::string& param, const std::string& defaultValue = "");
@@ -32,7 +32,8 @@ class FloodRoutes
   }
 
   public:
-  FloodRoutes(common::display::IDisplay* display, db::IFloodRepository* flood_repository, IFloodMapper* flood_mapper);
+  FloodRoutes(common::display::IDisplay* display, db::IFloodRepository* flood_repository,
+                  mapper::IFloodMapper* flood_mapper);
   void loop();
 };
 

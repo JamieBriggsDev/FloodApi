@@ -13,7 +13,7 @@
 #include <iomanip>
 #include <uri/UriBraces.h>
 
-#include "def_wifi_settings.h"
+#include "config/def_wifi_settings.h"
 #include "display/IDisplay.h"
 #include "logger/def_logger_factory.h"
 
@@ -104,8 +104,9 @@ void FloodRoutes::rainfallStation(const std::string& stationName)
 }
 
 
-FloodRoutes::FloodRoutes(common::display::IDisplay* display, db::IFloodRepository* flood_repository, IFloodMapper* flood_mapper) :
-    m_server(PORT)
+FloodRoutes::FloodRoutes(common::display::IDisplay* display, db::IFloodRepository* flood_repository,
+                         mapper::IFloodMapper* flood_mapper) :
+    m_server(config::PORT)
 {
   LOG.debug("Setting up FloodRoutes...");
   s_display = display;
