@@ -108,8 +108,7 @@ void FloodRoutes::rainfallStation(const std::string& stationName)
 
 
 FloodRoutes::FloodRoutes(common::display::IDisplay* display, db::IFloodRepository* flood_repository,
-                         mapper::IFloodMapper* flood_mapper) :
-    m_server(config::PORT)
+                         mapper::IFloodMapper* flood_mapper) : m_server(config::PORT)
 {
   LOG.debug("Setting up FloodRoutes...");
   s_display = display;
@@ -144,9 +143,9 @@ FloodRoutes::FloodRoutes(common::display::IDisplay* display, db::IFloodRepositor
                 LOG.info_f("/river completed in %d milliseconds", duration.count());
               });
 
-// Begin server
-LOG.debug("Starting server in FloodRoutes");
-m_server.begin();
+  // Begin server
+  LOG.debug("Starting server in FloodRoutes");
+  m_server.begin();
 }
 
 void FloodRoutes::loop() { m_server.handleClient(); }

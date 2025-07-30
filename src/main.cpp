@@ -34,8 +34,9 @@ void setup()
   }
 
   LOG.debug("Initializing LCD...");
-  lcd = new common::display::LiquidCrystalAdapter(jbriggs::flood::config::ESP_RS_PIN, jbriggs::flood::config::ESP_ENABLE_PIN, jbriggs::flood::config::ESP_D0_PIN,
-                                                  jbriggs::flood::config::ESP_D1_PIN, jbriggs::flood::config::ESP_D2_PIN, jbriggs::flood::config::ESP_D3_PIN);
+  lcd = new common::display::LiquidCrystalAdapter(
+      jbriggs::flood::config::ESP_RS_PIN, jbriggs::flood::config::ESP_ENABLE_PIN, jbriggs::flood::config::ESP_D0_PIN,
+      jbriggs::flood::config::ESP_D1_PIN, jbriggs::flood::config::ESP_D2_PIN, jbriggs::flood::config::ESP_D3_PIN);
   LOG.debug("Initializing Printer Service...");
   display = new common::display::LCDDisplay(*lcd);
   display->displayText("Starting", "Flood App!", common::display::STICKY);
