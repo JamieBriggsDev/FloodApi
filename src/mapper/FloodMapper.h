@@ -10,8 +10,8 @@
 class FloodMapper : public IFloodMapper
 {
   public:
-  JsonDocument getFloodData(const std::vector<RiverReading>& riverReadings) const override;
-  JsonDocument getRainfallReadings(const std::vector<RainfallReading>& rainfallReadings) const override;
+  JsonDocument getFloodData(const std::vector<db::RiverReading>& riverReadings) const override;
+  JsonDocument getRainfallReadings(const std::vector<db::RainfallReading>& rainfallReadings) const override;
 };
 
 

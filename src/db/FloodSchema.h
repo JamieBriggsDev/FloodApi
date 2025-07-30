@@ -8,24 +8,28 @@
 
 #include <string>
 
-struct RiverReading
+namespace jbriggs::flood::db
 {
-  std::string timestamp;
-  const double level;
 
-  bool operator==(const RiverReading& other) const { return timestamp == other.timestamp && level == other.level; }
-};
-
-struct RainfallReading
-{
-  std::string timestamp;
-  std::string station;
-  const double level;
-
-  bool operator==(const RainfallReading& other) const
+  struct RiverReading
   {
-    return timestamp == other.timestamp && station == other.station && level == other.level;
-  }
-};
+    std::string timestamp;
+    const double level;
 
+    bool operator==(const RiverReading& other) const { return timestamp == other.timestamp && level == other.level; }
+  };
+
+  struct RainfallReading
+  {
+    std::string timestamp;
+    std::string station;
+    const double level;
+
+    bool operator==(const RainfallReading& other) const
+    {
+      return timestamp == other.timestamp && station == other.station && level == other.level;
+    }
+  };
+
+} // namespace jbriggs::flood::db
 #endif // SCHEMA_H

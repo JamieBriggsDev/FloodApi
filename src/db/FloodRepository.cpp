@@ -3,18 +3,20 @@
 //
 
 #include "../../src/db/FloodRepository.h"
+#include "../../src/db/FloodSchema.h"
 
 #include <SD.h>
 #include <SPI.h>
 #include <sstream>
 #include <string>
 
-#include "FloodSchema.h"
 #include "def_pin_outs.h"
 #include "logger/def_logger_factory.h"
 
 #define READ_ALL -1
 #define PAGE_OFFSET 1
+
+using namespace jbriggs::flood::db;
 
 int openDb(const std::string& filename, sqlite3** db)
 {
@@ -162,7 +164,7 @@ std::map<std::string, std::string> FloodRepository::getAllStations()
 }
 
 
-std::vector<RiverReading> FloodRepository::getRiverReadings(std::string startDate, uint16_t page,
+std::vector<jbriggs::flood::db::RiverReading> FloodRepository::getRiverReadings(std::string startDate, uint16_t page,
                                                             uint8_t pageSize) const
 {
   std::vector<RiverReading> result;
@@ -209,7 +211,7 @@ std::vector<RiverReading> FloodRepository::getRiverReadings(std::string startDat
 
   return result;
 }
-std::vector<RainfallReading> FloodRepository::getStationRainfallReadings(std::string stationName, std::string startDate,
+std::vector<jbriggs::flood::db::RainfallReading> FloodRepository::getStationRainfallReadings(std::string stationName, std::string startDate,
                                                                          uint16_t page, uint8_t pageSize) const
 {
   std::vector<RainfallReading> result;

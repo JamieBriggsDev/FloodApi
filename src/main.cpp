@@ -14,10 +14,13 @@
 #include "logger/def_logger_factory.h"
 #include "mapper/FloodMapper.h"
 
+
+using namespace jbriggs::flood;
+
 FloodRoutes* flood_routes;
 LiquidCrystalAdapter* lcd;
 LCDDisplay* display;
-IFloodRepository* flood_repository;
+db::IFloodRepository* flood_repository;
 IFloodMapper* flood_mapper;
 
 void setup()
@@ -43,7 +46,7 @@ void setup()
 
 
   LOG.debug("Creating Flood repository...");
-  flood_repository = new FloodRepository("/flood_downgraded.db");
+  flood_repository = new db::FloodRepository("/flood_downgraded.db");
 
 
   LOG.debug("Initializing Flood mapper...");

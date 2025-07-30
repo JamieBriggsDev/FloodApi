@@ -17,32 +17,34 @@
 struct RiverReading;
 struct RainfallReading;
 
-class FloodRepository : public IFloodRepository
+namespace jbriggs::flood::db
 {
-  sqlite3* m_floodDb;
-  const char* m_dbPath;
-  std::map<std::string, std::string> m_stationMap;
-
-
-  public:
-  explicit FloodRepository(const char* dbPath) : m_floodDb(nullptr), m_dbPath(dbPath) {};
-  ~FloodRepository() override
+  class FloodRepository final : public IFloodRepository
   {
-    sqlite3_close(m_floodDb);
-    m_floodDb = nullptr;
+    sqlite3* m_floodDb;
+    const char* m_dbPath;
+    std::map<std::string, std::string> m_stationMap;
+
+
+public:
+    explicit FloodRepository(const char* dbPath) : m_floodDb(nullptr), m_dbPath(dbPath) {};
+    ~FloodRepository() override
+    {
+      sqlite3_close(m_floodDb);
+      m_floodDb = nullptr;
+    };
+    void init() override;
+
+    std::map<std::string, std::string> getAllStations() override;
+    bool stationExists(std::string stationName) override
+    {
+      return m_stationMap.find(stationName) != m_stationMap.end();
+    }
+    std::vector<RiverReading> getRiverReadings(std::string startDate, uint16_t page, uint8_t pageSize) const override;
+    std::vector<RainfallReading> getStationRainfallReadings(std::string stationName, std::string startDate,
+                                                            uint16_t page, uint8_t pageSize) const override;
   };
-  void init() override;
 
-  std::map<std::string, std::string> getAllStations() override;
-  bool stationExists(std::string stationName) override
-  {
-    return m_stationMap.find(stationName) != m_stationMap.end();
-  }
-  std::vector<RiverReading> getRiverReadings(std::string startDate, uint16_t page,
-                                             uint8_t pageSize) const override;
-  std::vector<RainfallReading> getStationRainfallReadings(std::string stationName, std::string startDate,
-                                                          uint16_t page, uint8_t pageSize) const override;
-};
-
+} // namespace flood::db
 
 #endif // FLOODREPOSITORY_H

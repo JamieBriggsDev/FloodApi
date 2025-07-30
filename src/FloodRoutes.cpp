@@ -54,7 +54,7 @@ void FloodRoutes::river()
   const int pagesize = std::stoi(getQueryParameter("pagesize", "12"));
 
 
-  const std::vector<RiverReading> readings = s_floodRepository->getRiverReadings(date, limit, pagesize);
+  const std::vector<db::RiverReading> readings = s_floodRepository->getRiverReadings(date, limit, pagesize);
 
   // Convert to JSON
   const JsonDocument doc = s_floodMapper->getFloodData(readings);
@@ -92,7 +92,7 @@ void FloodRoutes::rainfallStation(const std::string& stationName)
   const int pagesize = std::stoi(getQueryParameter("pagesize", "12"));
 
 
-  const std::vector<RainfallReading> rainfall_readings =
+  const std::vector<db::RainfallReading> rainfall_readings =
       s_floodRepository->getStationRainfallReadings(stationName, date, limit, pagesize);
 
   // Convert to JSON
@@ -104,7 +104,7 @@ void FloodRoutes::rainfallStation(const std::string& stationName)
 }
 
 
-FloodRoutes::FloodRoutes(IDisplay* display, IFloodRepository* flood_repository, IFloodMapper* flood_mapper) :
+FloodRoutes::FloodRoutes(IDisplay* display, db::IFloodRepository* flood_repository, IFloodMapper* flood_mapper) :
     m_server(PORT)
 {
   LOG.debug("Setting up FloodRoutes...");

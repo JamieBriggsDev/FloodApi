@@ -6,7 +6,7 @@
 
 #include "../logger/def_logger_factory.h"
 
-JsonDocument FloodMapper::getFloodData(const std::vector<RiverReading>& riverReadings) const
+JsonDocument FloodMapper::getFloodData(const std::vector<db::RiverReading>& riverReadings) const
 {
   JsonDocument doc;
   for (const auto& riverReading : riverReadings)
@@ -27,7 +27,7 @@ JsonDocument FloodMapper::getFloodData(const std::vector<RiverReading>& riverRea
 
   return doc;
 }
-JsonDocument FloodMapper::getRainfallReadings(const std::vector<RainfallReading>& rainfallReadings) const
+JsonDocument FloodMapper::getRainfallReadings(const std::vector<db::RainfallReading>& rainfallReadings) const
 {
   JsonDocument doc;
   for (const auto& rainfallReading : rainfallReadings)

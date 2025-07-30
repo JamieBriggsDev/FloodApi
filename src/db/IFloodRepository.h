@@ -5,23 +5,27 @@
 #ifndef IFLOODREPOSITORY_H
 #define IFLOODREPOSITORY_H
 #include <cstdint>
-#include <vector>
 #include <map>
+#include <vector>
 
 #include "FloodSchema.h"
 
-class IFloodRepository
-{
-  public:
-  virtual ~IFloodRepository() = default;
-  virtual void init() = 0;
 
-  virtual std::map<std::string, std::string> getAllStations() = 0;
-  virtual bool stationExists(std::string stationName) = 0;
-  virtual std::vector<RiverReading> getRiverReadings(std::string startDate = "", uint16_t page = 1,
-                                                     uint8_t pageSize = 12) const = 0;
-  virtual std::vector<RainfallReading> getStationRainfallReadings(std::string stationName, std::string startDate = "",
-                                                                  uint16_t page = 1, uint8_t pageSize = 12) const = 0;
-};
+namespace jbriggs::flood::db
+{
+  class IFloodRepository
+  {
+public:
+    virtual ~IFloodRepository() = default;
+    virtual void init() = 0;
+
+    virtual std::map<std::string, std::string> getAllStations() = 0;
+    virtual bool stationExists(std::string stationName) = 0;
+    virtual std::vector<RiverReading> getRiverReadings(std::string startDate = "", uint16_t page = 1,
+                                                       uint8_t pageSize = 12) const = 0;
+    virtual std::vector<RainfallReading> getStationRainfallReadings(std::string stationName, std::string startDate = "",
+                                                                    uint16_t page = 1, uint8_t pageSize = 12) const = 0;
+  };
+} // namespace jbriggs::flood::db
 
 #endif // IFLOODREPOSITORY_H

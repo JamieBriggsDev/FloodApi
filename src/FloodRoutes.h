@@ -12,12 +12,14 @@
 #include "db/IFloodRepository.h"
 #include "display/IDisplay.h"
 
+using namespace jbriggs::flood;
+
 class FloodRoutes
 {
   void river();
   void rainfallStation(const std::string& stationName);
   WebServer m_server;
-  IFloodRepository* s_floodRepository;
+  db::IFloodRepository* s_floodRepository;
   IDisplay* s_display;
   IFloodMapper* s_floodMapper;
   char m_expectHeader[20]{};
@@ -29,7 +31,7 @@ class FloodRoutes
   }
 
   public:
-  FloodRoutes(IDisplay* display, IFloodRepository* flood_repository, IFloodMapper* flood_mapper);
+  FloodRoutes(IDisplay* display, db::IFloodRepository* flood_repository, IFloodMapper* flood_mapper);
   void loop();
 };
 

@@ -10,6 +10,8 @@
 #include "../src/mapper/FloodMapper.h"
 #include "db/FloodSchema.h"
 
+using namespace jbriggs::flood;
+
 class FloodMapperTests : public ::testing::Test
 {
 protected:
@@ -19,8 +21,8 @@ protected:
 TEST_F(FloodMapperTests, shouldMapOneRiver)
 {
   // Given
-  RiverReading reading{ "2022-12-12 00:00:00", 0.375 };
-  std::vector<RiverReading> riverReadings{ reading };
+  db::RiverReading reading{ "2022-12-12 00:00:00", 0.375 };
+  std::vector<db::RiverReading> riverReadings{ reading };
   // When
   JsonDocument result = mapper_.getFloodData(riverReadings);
   // Then
@@ -32,9 +34,9 @@ TEST_F(FloodMapperTests, shouldMapOneRiver)
 TEST_F(FloodMapperTests, shouldMapTwoRivers)
 {
   // Given
-  RiverReading reading{ "2022-12-12 00:00:00", 0.375 };
-  RiverReading readingTwo{"2023-01-15 10:12:13", 1.5 };
-  std::vector<RiverReading> riverReadings{ reading, readingTwo };
+  db::RiverReading reading{"2022-12-12 00:00:00", 0.375};
+  db::RiverReading readingTwo{"2023-01-15 10:12:13", 1.5 };
+  std::vector<db::RiverReading> riverReadings{ reading, readingTwo };
   // When
   JsonDocument result = mapper_.getFloodData(riverReadings);
   // Then
@@ -49,8 +51,8 @@ TEST_F(FloodMapperTests, shouldMapTwoRivers)
 TEST_F(FloodMapperTests, shouldMapOneRainfallReading)
 {
   // Given
-  RainfallReading reading{ "2022-12-12 00:00:00", "station-one", 0.375 };
-  std::vector<RainfallReading> rainfallReadings{ reading };
+  db::RainfallReading reading{ "2022-12-12 00:00:00", "station-one", 0.375 };
+  std::vector<db::RainfallReading> rainfallReadings{ reading };
   // When
   JsonDocument result = mapper_.getRainfallReadings(rainfallReadings);
   // Then
@@ -63,9 +65,9 @@ TEST_F(FloodMapperTests, shouldMapOneRainfallReading)
 TEST_F(FloodMapperTests, shouldMapTwoRainfallReadings)
 {
   // Given
-  RainfallReading reading{ "2022-12-12 00:00:00", "station-one", 0.375 };
-  RainfallReading readingTwo{"2023-01-15 10:12:13", "station-two", 1.5 };
-  std::vector<RainfallReading> rainfallReadings{ reading, readingTwo};
+  db::RainfallReading reading{"2022-12-12 00:00:00", "station-one", 0.375};
+  db::RainfallReading readingTwo{"2023-01-15 10:12:13", "station-two", 1.5 };
+  std::vector<db::RainfallReading> rainfallReadings{ reading, readingTwo};
   // When
   JsonDocument result = mapper_.getRainfallReadings(rainfallReadings);
   // Then
