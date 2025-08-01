@@ -68,6 +68,7 @@ void FloodRepository::init()
 {
   LOG.info("Initializing FloodRepository");
 
+  // Step 1: Initialize SPI and SD
   LOG.debug("Beginning SPI");
   SPI.begin();
   LOG.debug("Beginning SD ");
@@ -83,7 +84,7 @@ void FloodRepository::init()
     throw std::runtime_error("No SD card attached");
   }
 
-  // Check the database file exists
+  // Step 2: Check the database file exists
   if (SD.exists(this->m_dbPath))
   {
     LOG.debug_f("Database file '%s' exists on SD card", this->m_dbPath);
@@ -96,6 +97,7 @@ void FloodRepository::init()
     LOG.error("Database file not found on SD card");
   }
 
+  // Step 3: Initialize SQLite3
   LOG.info("Initializing SQLite3...");
   int initialize = sqlite3_initialize();
   if (initialize != SQLITE_OK)
@@ -104,6 +106,7 @@ void FloodRepository::init()
     throw std::runtime_error("Failed to initialize SQLite3");
   }
 
+  // Step 4: Open database file
   LOG.debug("Opening DB...");
   std::stringstream vfsPath;
   vfsPath << "/sd" << this->m_dbPath;
@@ -114,6 +117,7 @@ void FloodRepository::init()
   }
   LOG.info_f("Connected to database!");
 
+  // Step 5: Cache station names
   LOG.debug("Caching station names");
   auto stationNames = this->getAllStations();
   if (stationNames.empty())
