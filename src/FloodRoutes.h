@@ -23,15 +23,14 @@ namespace jbriggs::flood::routes
     void river();
     void rainfallStation(const std::string& stationName);
     WebServer m_server;
-    db::IFloodRepository* s_floodRepository;
-    common::display::IDisplay* s_display;
-    mapper::IFloodMapper* s_floodMapper;
-    char m_expectHeader[20]{};
+    db::IFloodRepository* m_floodRepository;
+    common::display::IDisplay* m_display;
+    mapper::IFloodMapper* m_floodMapper;
 
     std::string getQueryParameter(const std::string& param, const std::string& defaultValue = "");
-    void displayParameterValue(const std::string& paramName, const std::string& value) const
+    void displayParamOnLCD(const std::string& paramName, const std::string& value) const
     {
-      s_display->displayText(paramName, value, common::display::FLASH);
+      m_display->displayText(paramName, value, common::display::FLASH);
     }
 
 public:

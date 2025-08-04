@@ -24,30 +24,29 @@ std::string FloodRoutes::getQueryParameter(const std::string& param, const std::
 {
   std::stringstream paramDisplay;
   paramDisplay << "Param " << param;
-  LOG.debug_f("Param: %s, Default: %s", param.c_str(), defaultValue.c_str());
+  //LOG.debug_f("Param: %s, Default: %s", param, defaultValue);
 
   const String paramName(param.c_str());
   if (!m_server.hasArg(paramName))
   {
     LOG.debug_f("Param %s not found", param.c_str());
-    displayParameterValue(paramDisplay.str(), defaultValue.empty() ? "EMPTY" : defaultValue);
+    displayParamOnLCD(paramDisplay.str(), defaultValue.empty() ? "EMPTY" : defaultValue);
     return defaultValue.empty() ? "" : defaultValue;
   }
 
-  LOG.debug_f("Total request params: %d", m_server.args());
   const auto paramValue = m_server.arg(paramName);
   std::string result(paramValue.c_str(), paramValue.length());
-  LOG.debug_f("Getting param arg: %s", result);
-  s_display->displayText(paramDisplay.str(), result, common::display::FLASH);
+  LOG.debug_f("Getting param arg: %s", paramValue.c_str());
+  displayParamOnLCD(paramDisplay.str(), result);
+  m_display->displayText(paramDisplay.str(), result, common::display::FLASH);
   return result;
 }
 
-// Add static member definition
 void FloodRoutes::river()
 {
   LOG.info("/river requested");
 
-  s_display->displayText("Calling", "/river", common::display::FLASH);
+  m_display->displayText("Calling", "/river", common::display::FLASH);
   // Get request parameters
   // Get the date parameter
   const std::string date = getQueryParameter("start");
@@ -57,10 +56,10 @@ void FloodRoutes::river()
   const int pagesize = std::stoi(getQueryParameter("pagesize", "12"));
 
 
-  const std::vector<db::RiverReading> readings = s_floodRepository->getRiverReadings(date, limit, pagesize);
+  const std::vector<db::RiverReading> readings = m_floodRepository->getRiverReadings(date, limit, pagesize);
 
   // Convert to JSON
-  const JsonDocument doc = s_floodMapper->getFloodData(readings);
+  const JsonDocument doc = m_floodMapper->getFloodData(readings);
   std::string json;
   serializeJsonPretty(doc, json);
 
@@ -77,10 +76,10 @@ void FloodRoutes::rainfallStation(const std::string& stationName)
   fullPath << "/rainfall/" << stationName;
   LOG.info_f("/rainfall/{station} requested using %s", stationName);
 
-  s_display->displayText("Calling", fullPath.str(), common::display::FLASH);
+  m_display->displayText("Calling", fullPath.str(), common::display::FLASH);
 
   // You can validate against your known stations
-  if (!s_floodRepository->stationExists(stationName))
+  if (!m_floodRepository->stationExists(stationName))
   {
     m_server.send(404, "application/json", R"({"error": "Invalid station name. Station not found."})");
     return;
@@ -96,10 +95,10 @@ void FloodRoutes::rainfallStation(const std::string& stationName)
 
 
   const std::vector<db::RainfallReading> rainfall_readings =
-      s_floodRepository->getStationRainfallReadings(stationName, date, limit, pagesize);
+      m_floodRepository->getStationRainfallReadings(stationName, date, limit, pagesize);
 
   // Convert to JSON
-  const JsonDocument doc = s_floodMapper->getRainfallReadings(rainfall_readings);
+  const JsonDocument doc = m_floodMapper->getRainfallReadings(rainfall_readings);
   std::string json;
   serializeJsonPretty(doc, json);
 
@@ -108,21 +107,16 @@ void FloodRoutes::rainfallStation(const std::string& stationName)
 
 
 FloodRoutes::FloodRoutes(common::display::IDisplay* display, db::IFloodRepository* flood_repository,
-                         mapper::IFloodMapper* flood_mapper) : m_server(config::PORT)
+                         mapper::IFloodMapper* flood_mapper) :
+    m_server(config::PORT), m_display(display), m_floodRepository(flood_repository), m_floodMapper(flood_mapper)
 {
-  LOG.debug("Setting up FloodRoutes...");
-  s_display = display;
-  s_floodRepository = flood_repository;
-  s_floodMapper = flood_mapper;
-
   // Setup routes
   LOG.debug("Setting up routes...");
   // GET: /river
   m_server.on("/river", HTTP_GET,
-              [this]()
+              [this]
               {
                 const auto start = std::chrono::system_clock::now();
-
                 this->river();
 
                 const auto end = std::chrono::system_clock::now();
@@ -131,9 +125,10 @@ FloodRoutes::FloodRoutes(common::display::IDisplay* display, db::IFloodRepositor
               });
   // GET: /rainfall/{stationName}
   m_server.on(UriBraces("/rainfall/{}"), HTTP_GET,
-              [this]()
+              [this]
               {
                 const auto start = std::chrono::system_clock::now();
+
                 const auto pathArg = m_server.pathArg(0);
                 const std::string stationName(pathArg.c_str(), pathArg.length());
                 this->rainfallStation(stationName);

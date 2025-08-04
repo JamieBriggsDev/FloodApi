@@ -26,7 +26,7 @@ JsonDocument FloodMapper::getFloodData(const std::vector<db::RiverReading>& rive
 
   std::string json;
   serializeJsonPretty(doc, json);
-  LOG.debug(json.c_str());
+  LOG.debug(json);
 
   return doc;
 }
@@ -48,7 +48,7 @@ JsonDocument FloodMapper::getRainfallReadings(const std::vector<db::RainfallRead
 
   std::string json;
   serializeJsonPretty(doc, json);
-  LOG.debug(json.c_str());
+  LOG.debug(json);
 
   return doc;
 }
