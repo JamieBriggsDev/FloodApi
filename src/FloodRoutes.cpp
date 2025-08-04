@@ -22,23 +22,26 @@ using namespace jbriggs::flood::routes;
 
 std::string FloodRoutes::getQueryParameter(const std::string& param, const std::string& defaultValue)
 {
+  // Build string for LCD
   std::stringstream paramDisplay;
   paramDisplay << "Param " << param;
-  //LOG.debug_f("Param: %s, Default: %s", param, defaultValue);
 
+  // Check if request param is found on request
   const String paramName(param.c_str());
   if (!m_server.hasArg(paramName))
   {
     LOG.debug_f("Param %s not found", param.c_str());
     displayParamOnLCD(paramDisplay.str(), defaultValue.empty() ? "EMPTY" : defaultValue);
+    // Return the default value if request param does not exist
     return defaultValue.empty() ? "" : defaultValue;
   }
 
+  // Extract request param value
   const auto paramValue = m_server.arg(paramName);
   std::string result(paramValue.c_str(), paramValue.length());
-  LOG.debug_f("Getting param arg: %s", paramValue.c_str());
+
   displayParamOnLCD(paramDisplay.str(), result);
-  m_display->displayText(paramDisplay.str(), result, common::display::FLASH);
+
   return result;
 }
 
