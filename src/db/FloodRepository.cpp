@@ -28,7 +28,7 @@ int openDb(const std::string& filename, sqlite3** db)
     return rc;
   }
 
-  LOG.info_f("Opened database successfully: %s", filename);
+  LOG.info_f("Opened database successfully: %s", filename.c_str());
   return rc;
 }
 
@@ -138,7 +138,7 @@ std::map<std::string, std::string> FloodRepository::getAllStations()
 
   const std::string query = "SELECT * FROM StationNames";
 
-  LOG.debug_f("Preparing query: %s", query);
+  LOG.debug_f("Preparing query: %s", query.c_str());
   // Turn SQL statement into something SQLite can use. This will be the stmt object.
   rc = sqlite3_prepare_v2(m_floodDb, query.c_str(), READ_ALL, &stmt, nullptr);
   if (rc != SQLITE_OK)

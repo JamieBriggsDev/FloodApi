@@ -44,7 +44,7 @@ void setup()
 
 
   LOG.debug("Creating Flood repository...");
-  flood_repository = new db::FloodRepository("/flood_downgraded.db");
+  flood_repository = new db::FloodRepository("/flood_recreated.db");
 
 
   LOG.debug("Initializing Flood mapper...");
