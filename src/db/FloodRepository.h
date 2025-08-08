@@ -40,9 +40,9 @@ public:
     {
       return m_stationMap.find(stationName) != m_stationMap.end();
     }
-    std::vector<RiverReading> getRiverReadings(std::string startDate, uint16_t page, uint8_t pageSize) const override;
+    std::vector<RiverReading> getRiverReadings(std::string startDate, int page, uint8_t pageSize) const override;
     std::vector<RainfallReading> getStationRainfallReadings(std::string stationName, std::string startDate,
-                                                            uint16_t page, uint8_t pageSize) const override;
+                                                            int page, uint8_t pageSize) const override;
   };
 
 } // namespace flood::db

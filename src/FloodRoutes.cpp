@@ -77,7 +77,7 @@ void FloodRoutes::rainfallStation(const std::string& stationName)
   // Get path param station name
   std::stringstream fullPath;
   fullPath << "/rainfall/" << stationName;
-  LOG.info_f("/rainfall/{station} requested using %s", stationName);
+  LOG.info_f("/rainfall/{station} requested using %s", stationName.c_str());
 
   m_display->displayText("Calling", fullPath.str(), common::display::FLASH);
 
@@ -90,7 +90,7 @@ void FloodRoutes::rainfallStation(const std::string& stationName)
 
   // Get request parameters
   // Get the date parameter
-  const std::string date = getQueryParameter("start", "2022-12-25");
+  const std::string date = getQueryParameter("start");
   // Get limit parameter with default value
   const int limit = std::stoi(getQueryParameter("page", "1"));
   // Get page parameter with default value

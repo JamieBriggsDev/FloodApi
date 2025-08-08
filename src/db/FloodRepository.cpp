@@ -168,7 +168,7 @@ std::map<std::string, std::string> FloodRepository::getAllStations()
 }
 
 
-std::vector<jbriggs::flood::db::RiverReading> FloodRepository::getRiverReadings(std::string startDate, uint16_t page,
+std::vector<jbriggs::flood::db::RiverReading> FloodRepository::getRiverReadings(std::string startDate, int page,
                                                             uint8_t pageSize) const
 {
   std::vector<RiverReading> result;
@@ -178,14 +178,14 @@ std::vector<jbriggs::flood::db::RiverReading> FloodRepository::getRiverReadings(
 
   std::stringstream sql;
   // Casting pageSize to int as uint8_t is essentially an unsigned char, so 1 would return ' '.
-  sql << "SELECT * FROM RiverLevels";
+  sql << "SELECT REPLACE(r.TimeStamp, ' ', 'T') || 'Z' AS TimeStamp, r.Level FROM RiverLevels r";
   if (!startDate.empty())
   {
     sql << " WHERE timestamp >= '" << startDate << "'";
   }
   sql << " LIMIT " << static_cast<int>(pageSize) << " OFFSET " << ((page - PAGE_OFFSET) * pageSize);
   std::string query = sql.str();
-  LOG.debug_f("Preparing query: %s", query);
+  LOG.debug_f("Preparing query: %s", query.c_str());
   // Turn SQL statement into something SQLite can use. This will be the stmt object.
   rc = sqlite3_prepare_v2(m_floodDb, query.c_str(), READ_ALL, &stmt, nullptr);
   if (rc != SQLITE_OK)
@@ -216,10 +216,10 @@ std::vector<jbriggs::flood::db::RiverReading> FloodRepository::getRiverReadings(
   return result;
 }
 std::vector<jbriggs::flood::db::RainfallReading> FloodRepository::getStationRainfallReadings(std::string stationName, std::string startDate,
-                                                                         uint16_t page, uint8_t pageSize) const
+                                                                         int page, uint8_t pageSize) const
 {
   std::vector<RainfallReading> result;
-  LOG.debug_f("Finding rainfall readings for station: %s", stationName);
+  LOG.debug_f("Finding rainfall readings for station: %s", stationName.c_str());
   std::string stationId = m_stationMap.at(stationName);
   int rc = INT_MAX;
   sqlite3_stmt* stmt;
@@ -227,15 +227,16 @@ std::vector<jbriggs::flood::db::RainfallReading> FloodRepository::getStationRain
   LOG.debug("Creating SQL statement");
   std::stringstream sql;
   // Casting pageSize to int as uint8_t is essentially an unsigned char, so 1 would return ' '.
-  sql << "SELECT r.TimeStamp, r.Level FROM Rainfalls r";
+  sql << "SELECT REPLACE(r.TimeStamp, ' ', 'T') || 'Z' AS TimeStamp, r.Level FROM Rainfalls r";
   sql << " WHERE r.StationId = '" << stationId << "'";
   if (!startDate.empty())
   {
-    sql << " AND timestamp >= '" << startDate << "'";
+    sql << " AND r.TimeStamp >= '" << startDate << "'";
   }
-  sql << " LIMIT " << static_cast<int>(pageSize) << " OFFSET " << ((page - PAGE_OFFSET) * pageSize);
+  sql << " LIMIT " << static_cast<int>(pageSize)
+      << " OFFSET " << ((page - PAGE_OFFSET) * pageSize);
   std::string query = sql.str();
-  LOG.debug_f("Preparing query: %s", query);
+  LOG.debug_f("Preparing query: %s", query.c_str());
   // Turn SQL statement into something SQLite can use. This will be the stmt object.
   rc = sqlite3_prepare_v2(m_floodDb, query.c_str(), READ_ALL, &stmt, nullptr);
   if (rc != SQLITE_OK)
@@ -251,6 +252,7 @@ std::vector<jbriggs::flood::db::RainfallReading> FloodRepository::getStationRain
     // Map to struct and add to result.
     auto temp = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));
     std::string timestamp(temp); // Creates a copy of the string data
+    LOG.debug_f("Found timestamp: %s", timestamp.c_str());
     const double level = sqlite3_column_double(stmt, 1);
     RainfallReading reading{.timestamp = timestamp, .station = stationName, .level = level};
     result.push_back(reading);
