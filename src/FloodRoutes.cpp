@@ -12,6 +12,7 @@
 #include <chrono>
 #include <iomanip>
 #include <uri/UriBraces.h>
+#include <sstream>
 
 #include "config/def_wifi_settings.h"
 #include "display/IDisplay.h"
@@ -59,6 +60,8 @@ void FloodRoutes::river()
   const int pagesize = std::stoi(getQueryParameter("pagesize", "12"));
 
 
+
+  m_display->displayText("Loading river", "data...", common::display::STICKY);
   const std::vector<db::RiverReading> readings = m_floodRepository->getRiverReadings(date, limit, pagesize);
 
   // Convert to JSON
@@ -96,7 +99,7 @@ void FloodRoutes::rainfallStation(const std::string& stationName)
   // Get page parameter with default value
   const int pagesize = std::stoi(getQueryParameter("pagesize", "12"));
 
-
+  m_display->displayText("Loading rainfall", "data...", common::display::STICKY);
   const std::vector<db::RainfallReading> rainfall_readings =
       m_floodRepository->getStationRainfallReadings(stationName, date, limit, pagesize);
 
@@ -124,6 +127,7 @@ FloodRoutes::FloodRoutes(common::display::IDisplay* display, db::IFloodRepositor
 
                 const auto end = std::chrono::system_clock::now();
                 const auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+                m_display->displayText("Done in", std::to_string(duration.count()) + "ms", common::display::FLASH);
                 LOG.info_f("/river completed in %d milliseconds", duration.count());
               });
   // GET: /rainfall/{stationName}
@@ -138,7 +142,10 @@ FloodRoutes::FloodRoutes(common::display::IDisplay* display, db::IFloodRepositor
 
                 const auto end = std::chrono::system_clock::now();
                 const auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-                LOG.info_f("/river completed in %d milliseconds", duration.count());
+
+                m_display->displayText("Done in", std::to_string(duration.count()) + "ms", common::display::FLASH);
+
+                LOG.info_f("/rainfall completed in %d milliseconds", duration.count());
               });
 
   // Begin server
